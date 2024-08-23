@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zoom Detection</title>
+</head>
+<body>
+    <script>
+        // Function to handle zoom events
+        function handleZoom(event) {
+            // Normalize the wheel delta values
+            const delta = event.deltaY || event.deltaX;
+
+            // Check the zoom direction
+            if (delta < 0) {
+                console.log("zoom in");
+            } else if (delta > 0) {
+                console.log("zoom out");
+            }
+        }
+
+        // Add the event listener for the wheel event
+        window.addEventListener('wheel', handleZoom);
+    </script>
+</body>
+</html>

@@ -645,10 +645,7 @@ handle.style.cssText = `
             console.log('Invalid color format in clipboard');
           }
         });
-      } else if (event.key === 'b') {
-        selectedElement.style.backgroundColor = getRandomColor();
-        updateCSSCode();
-      } else if (event.key === 'c') {
+      } else if (event.altKey && event.key === 'q') {
         selectedElement.style.color = getRandomColor();
         updateCSSCode();
       } 
@@ -664,7 +661,7 @@ handle.style.cssText = `
         });
       }else if (event.key === 'Delete') {
         removeElement(selectedElement);
-      }else if (event.key === 'm') {
+      }else if (event.altKey && event.key === 'm') {
         if(selectedElement.tagName === 'IMG'){
 
           navigator.clipboard.readText().then(text => {
@@ -679,12 +676,15 @@ handle.style.cssText = `
 
         }
        
-      }else if (event.key === 'a') {
+      }else if (event.altKey && event.key === 'a') {
         selectedElement.position = 'relative';
         const div = document.createElement('div');
         div.innerText = 'Click to Edit';
         selectedElement.appendChild(div)
-      }else if (event.key === 'd') {
+
+        div.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+      }else if (event.altKey && event.key === 'd') {
         selectedElement.position = 'relative';
         const img = document.createElement('img');
      
@@ -944,6 +944,84 @@ handle.style.cssText = `
       // document.getElementById('position-select').addEventListener('change', (e) => {
       //   element.style.position = e.target.value;
       // });
+
+      // element.addEventListener('wheel', (e)=>{
+      //   const padding = parseInt( window.getComputedStyle(element).padding, 10);
+      //   e.preventDefault()
+         
+      //     const delta = e.deltaY || e.deltaX;
+
+      //     // Check the zoom direction
+      //     if (delta < 0) {
+
+      //       element.style.padding = `${padding + delta}px`
+            
+           
+
+
+      //         console.log("zoom in : ", padding , " ", "De : ",delta);
+
+      //     } else if (delta > 0) {
+            
+      //       element.style.padding = `${padding + delta}px`
+
+      //         console.log("zoom out");
+      //     }
+      // });
+
+
+      let currentKey = null;
+
+      // Handle keydown event
+      document.addEventListener('keydown', (e) => {
+          if (['p', 'h', 's'].includes(e.key)) {
+              currentKey = e.key;
+          }
+      });
+
+      // Handle keyup event
+      document.addEventListener('keyup', (e) => {
+          if (['p', 'h', 's'].includes(e.key)) {
+              currentKey = null;
+          }
+      });
+
+      // Handle wheel event
+      element.addEventListener('wheel', (e) => {
+          if (!currentKey) return; // Do nothing if no key is pressed
+
+          const delta = e.deltaY || e.deltaX;
+          e.preventDefault(); // Prevent the default scrolling behavior
+
+          // Get current values
+          const computedStyle = window.getComputedStyle(element);
+          const currentPadding = parseInt(computedStyle.padding, 10);
+          const currentHeight = parseInt(computedStyle.height, 10);
+          const currentBorderRadius = parseInt(computedStyle.borderRadius, 10);
+
+          switch (currentKey) {
+              case 'p':
+                  // Adjust padding
+                  element.style.padding = `${currentPadding - delta}px`;
+                  console.log("zoom in padding: ", currentPadding + delta, " delta: ", delta);
+                  break;
+              case 'h':
+                  // Adjust height
+                  element.style.height = `${currentHeight - delta}px`;
+                  console.log("zoom in height: ", currentHeight + delta, " delta: ", delta);
+                  break;
+              case 's':
+                  // Adjust border-radius
+                  element.style.borderRadius = `${Math.max(currentBorderRadius - delta, 0)}px`;
+                  console.log("zoom in border-radius: ", currentBorderRadius + delta, " delta: ", delta);
+                  break;
+          }
+      });
+
+
+
+
+
 
       document.getElementById('width-input').addEventListener('input', (e) => {
         element.style.width = e.target.value;
