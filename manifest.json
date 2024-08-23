@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Color Theme Changer",
+  "version": "1.0",
+  "description": "Change the theme of any website with random colors.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "./R.png",
+      "48": "./R.png"
+    }
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "background",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ]
+}
