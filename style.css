@@ -243,7 +243,9 @@ i{
       }
   }
   
-
+#fileInput{
+  display: none;
+}
 
   .resizable {
     position: fixed;

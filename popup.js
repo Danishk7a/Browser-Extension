@@ -74,6 +74,7 @@ async function changeTheme() {
 
 
 
+
 // ==========================================Font Colors =============================================================================
 
 document.getElementById('FontColors').addEventListener('click', () => {
@@ -442,6 +443,7 @@ document.getElementById('toggleEditMode').addEventListener('click', function() {
     
       
     }
+
     
 
   
@@ -451,6 +453,14 @@ document.getElementById('toggleEditMode').addEventListener('click', function() {
       element.classList.add('resizable')
       element.style.position = 'relative';
 
+      if (element.textContent.trim() !== '') {
+        element.addEventListener('dblclick', () => {
+          element.contentEditable = 'true'; 
+          element.focus();
+        });
+      }
+    
+       
       const menuTrigger = document.createElement('div');
       menuTrigger.className = 'extension-menu-trigger';
       disableDefaults();
@@ -669,7 +679,57 @@ handle.style.cssText = `
 
         }
        
+      }else if (event.key === 'a') {
+        selectedElement.position = 'relative';
+        const div = document.createElement('div');
+        div.innerText = 'Click to Edit';
+        selectedElement.appendChild(div)
+      }else if (event.key === 'd') {
+        selectedElement.position = 'relative';
+        const img = document.createElement('img');
+     
+        function getRandomImageWithSeed() {
+          const seed = Math.floor(Math.random() * 1000);
+          return `https://picsum.photos/seed/${seed}/300/300`;
       }
+      img.src =  getRandomImageWithSeed();
+
+        selectedElement.appendChild(img)
+      }else if (event.key === 'w') {
+
+        function getRandomImageWithSeed(w,h) {
+          const seed = Math.floor(Math.random() * 1000);
+          return `https://picsum.photos/seed/${seed}/${w}/${h}`;
+      }
+      
+        if(selectedElement.tagName === 'IMG'){
+       const w =   parseFloat( window.getComputedStyle(selectedElement).width,10)
+        const h =  parseFloat( window.getComputedStyle(selectedElement).height,10)
+               selectedElement.src =  getRandomImageWithSeed(w,h)
+
+        }
+        
+     
+      }else if(event.key === ' '){
+        if(selectedElement.tagName === 'IMG'){
+          event.preventDefault();
+          document.getElementById('fileInput').click();
+        
+        
+        }else{
+          event.preventDefault();
+
+          selectedElement.style.backgroundColor = getRandomColor();
+          updateCSSCode();
+
+        }
+      
+      }
+
+
+
+     
+
     }
 
 
@@ -777,10 +837,12 @@ handle.style.cssText = `
             <input type="text" id="border-radius-input" placeholder="10px or 50%">
           </label>
           <label>Box Shadow:
-            <input type="text" id="box-shadow-input" placeholder="2px 2px 5px rgba(0,0,0,0.3)">
+           
+            <input type="range" id="box-shadow-inputs" min="0" max="100" value="100">
           </label>
         </div>
         <div id="layout-tab" class="tab-content">
+         <input type="file" id="fileInput" accept="image/*" />
          
           <label>Width:
             <input type="range" id="width-slider" min="0" max="100" value="100">
@@ -857,10 +919,23 @@ handle.style.cssText = `
         element.style.border = e.target.value;
       });
 
-      document.getElementById('box-shadow-input').addEventListener('input', (e) => {
-        element.style.boxShadow = e.target.value;
+      document.getElementById('box-shadow-inputs').addEventListener('input', (e) => {
+        // element.style.boxShadow = e.target.value;
+
+        element.style.filter = `drop-shadow(30px 10px ${e.target.value}px #242424)`
+      
       });
 
+      document.getElementById('fileInput').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                element.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+    });
       // Layout tab event listeners
       // document.getElementById('display-select').addEventListener('change', (e) => {
       //   element.style.display = e.target.value;
