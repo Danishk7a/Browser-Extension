@@ -6,8 +6,8 @@
   "action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "./R.png",
-      "48": "./R.png"
+      "16": "./De.png",
+      "48": "./De.png"
     }
   },
   "permissions": [

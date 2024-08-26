@@ -323,7 +323,7 @@ document.getElementById('toggleEditMode').addEventListener('click', function() {
     style.classList.add('resizable')
     style.textContent = `
       .extension-selected-outline {
-        outline: 2px solid #28a745 !important;
+        outline: 2px solid #0066ff;
         outline-offset: -2px;
       }
       .extension-menu-trigger {
@@ -798,7 +798,8 @@ handle.style.cssText = `
 
       const sidemenu = document.createElement('div');
       sidemenu.id = 'extension-sidemenu';
-      sidemenu.className = 'extension-ui'; // Add this class for identification
+      sidemenu.className = 'extension-ui'; 
+      sidemenu.classList.add('not-editable')// Add this class for identification
       sidemenu.style.cssText = `
         position: fixed;
         top: 20px;
@@ -814,61 +815,55 @@ handle.style.cssText = `
         padding: 10px;
         z-index: 2147483647;
         font-size:11px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      `;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);`;
 
-      sidemenu.innerHTML = `
-       
+        sidemenu.innerHTML = `<div className="not-editable">
         <div id="style-tab" class="tab-content active">
-          <label>Background Color:
-            <input type="color" id="bgcolor-picker">
-          </label>
-          <label>Text Color:
-            <input type="color" id="color-picker">
-          </label>
-          <label>Gradient:
-            <input type="text" id="gradient-input" placeholder="linear-gradient(...)">
-          </label>
-          <label>Border:
-            <input type="text" id="border-input" placeholder="1px solid black">
-          </label>
-          <label>Border Radius:
-            <input type="range" id="border-radius-slider" min="0" max="50" value="0">
-            <input type="text" id="border-radius-input" placeholder="10px or 50%">
-          </label>
-          <label>Box Shadow:
-           
-            <input type="range" id="box-shadow-inputs" min="0" max="100" value="100">
-          </label>
-        </div>
-        <div id="layout-tab" class="tab-content">
-         <input type="file" id="fileInput" accept="image/*" />
-         
-          <label>Width:
-            <input type="range" id="width-slider" min="0" max="100" value="100">
-            <input type="text" id="width-input" placeholder="100px or 100%">
-          </label>
-          <label>Height:
-            <input type="range" id="height-slider" min="0" max="100" value="100">
-            <input type="text" id="height-input" placeholder="100px or 100%">
-          </label>
-          <label>Padding:
-            <input type="range" id="padding-slider" min="0" max="50" value="0">
-            <input type="text" id="padding-input" placeholder="10px or 10px 5px">
-          </label>
-          <label>Margin:
-            <input type="text" id="margin-input" placeholder="10px or 10px 5px">
-          </label>
-        </div>
-        <div class="code-section">
-          <button id="toggle-code">Show CSS Code</button>
-          <div id="code-container" style="display: none;">
-            <pre id="css-code"></pre>
-            <button id="copy-code">Copy CSS</button>
+            <label>Background Color:
+              <input type="color" id="bgcolor-picker">
+            </label>
+            <label>Text Color:
+              <input  style="background-color: white;" type="color" id="color-picker">
+            </label>
+            <label>Gradient:
+              <input style="background-color: white;"  type="text" id="gradient-input" placeholder="linear-gradient(...)">
+            </label>
+            <label>Border:
+              <input style="background-color: white;"  type="text" id="border-input" placeholder="1px solid black">
+            </label>
+            <label>Border Radius:
+              <input  type="range" id="border-radius-slider" min="0" max="50" value="0">
+              <input style="background-color: white;"  type="text" id="border-radius-input" placeholder="10px or 50%">
+            </label>
+            <label>Box Shadow:
+             
+              <input type="range" id="box-shadow-inputs" min="0" max="100" value="100">
+            </label>
           </div>
-        </div>
-      `;
-
+          
+          <div id="layout-tab" class="tab-content">
+           <input style="display: none;"  type="file" id="fileInput" accept="image/*" />
+           
+           
+            <input type="color" id="Gradient-color-one">
+            <input type="color" id="Gradient-color-one"> 
+            <input  type="range" id="Gradient-angle" min="0" max="360" value="0">
+    
+         
+    
+    
+          </div>
+          
+          <div class="code-section">
+            <button id="toggle-code">Show CSS Code</button>
+            <div id="code-container" style="display: none;">
+              <pre id="css-code"></pre>
+              <button id="copy-code">Copy CSS</button>
+            </div>
+          </div>
+    </div>`;
+    
+   
       document.body.appendChild(sidemenu);
       console.log('Sidemenu appended to body');
 
@@ -879,6 +874,7 @@ handle.style.cssText = `
       sidemenu.style.display = 'block';
 
       // Prevent sidemenu interactions from triggering element selection
+
       sidemenu.addEventListener('mousedown', (e) => e.stopPropagation());
       sidemenu.addEventListener('click', (e) => e.stopPropagation());
 
@@ -936,38 +932,7 @@ handle.style.cssText = `
             reader.readAsDataURL(file);
         }
     });
-      // Layout tab event listeners
-      // document.getElementById('display-select').addEventListener('change', (e) => {
-      //   element.style.display = e.target.value;
-      // });
-
-      // document.getElementById('position-select').addEventListener('change', (e) => {
-      //   element.style.position = e.target.value;
-      // });
-
-      // element.addEventListener('wheel', (e)=>{
-      //   const padding = parseInt( window.getComputedStyle(element).padding, 10);
-      //   e.preventDefault()
-         
-      //     const delta = e.deltaY || e.deltaX;
-
-      //     // Check the zoom direction
-      //     if (delta < 0) {
-
-      //       element.style.padding = `${padding + delta}px`
-            
-           
-
-
-      //         console.log("zoom in : ", padding , " ", "De : ",delta);
-
-      //     } else if (delta > 0) {
-            
-      //       element.style.padding = `${padding + delta}px`
-
-      //         console.log("zoom out");
-      //     }
-      // });
+     
 
 
       let currentKey = null;
@@ -1020,39 +985,42 @@ handle.style.cssText = `
 
 
 
-
-
-
-      document.getElementById('width-input').addEventListener('input', (e) => {
-        element.style.width = e.target.value;
-      });
-
-      document.getElementById('height-input').addEventListener('input', (e) => {
-        element.style.height = e.target.value;
-      });
-
-      document.getElementById('margin-input').addEventListener('input', (e) => {
-        element.style.margin = e.target.value;
-      });
-
-      document.getElementById('padding-input').addEventListener('input', (e) => {
-        element.style.padding = e.target.value;
-      });
-
       // Toggle code section
       const toggleCodeBtn = document.getElementById('toggle-code');
       const codeContainer = document.getElementById('code-container');
       const cssCode = document.getElementById('css-code');
 
       toggleCodeBtn.addEventListener('click', () => {
-        if (codeContainer.style.display === 'none') {
-          codeContainer.style.display = 'block';
-          toggleCodeBtn.textContent = 'Hide CSS Code';
-          updateCSSCode();
-        } else {
-          codeContainer.style.display = 'none';
-          toggleCodeBtn.textContent = 'Show CSS Code';
-        }
+
+
+        // if (codeContainer.style.display === 'none') {
+        //   codeContainer.style.display = 'block';
+        //   toggleCodeBtn.textContent = 'Hide CSS Code';
+        //   updateCSSCode();
+        // } else {
+        //   codeContainer.style.display = 'none';
+        //   toggleCodeBtn.textContent = 'Show CSS Code';
+        // }
+
+
+        function getExplicitStyles(element) {
+  const styles = {};
+  const computedStyles = window.getComputedStyle(element);
+  
+  for (let i = 0; i < element.style.length; i++) {
+    const property = element.style[i];
+    styles[property] = computedStyles.getPropertyValue(property);
+  }
+  
+  return styles;
+}
+
+const explicitStyles = getExplicitStyles(element);
+console.log("EX Style : ",explicitStyles);
+
+
+
+
       });
 
       // Copy CSS code
@@ -1129,18 +1097,7 @@ handle.style.cssText = `
 
 
 
-// ===========================================================Resiable ===========================================================
 
-
-
-// Disable image dragging
-
-
-
-
-
-
-// ===========================================================Resiable ===========================================================
 
 
 
@@ -1265,3 +1222,33 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 // ---------------------------------------------------------disable default -----------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

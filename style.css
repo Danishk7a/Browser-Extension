@@ -27,7 +27,7 @@ a{
     width: 100%;
     height: 100%;
     z-index: -1;
-    background-image: url('b.gif');
+    background-image: url('Intro.gif');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -104,7 +104,9 @@ button{
     padding: 7px;
     border: none;
     color: white;
-    background:linear-gradient(90deg, rgba(97,45,216,1) 0%, rgba(241,74,107,1) 100%);
+    background:linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae );
+  
+    
     border-radius: 5px;
     cursor: pointer;
     
@@ -243,9 +245,6 @@ i{
       }
   }
   
-#fileInput{
-  display: none;
-}
 
   .resizable {
     position: fixed;
