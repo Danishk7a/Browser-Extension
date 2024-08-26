@@ -8,6 +8,7 @@ body, html {
     width: 300px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: relative;
+    font-size: 11px;
 }
 #header{
     position: absolute;
@@ -104,6 +105,7 @@ button{
     padding: 7px;
     border: none;
     color: white;
+    font-size: 11px;
     background:linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae );
   
     
