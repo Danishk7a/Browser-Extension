@@ -4,18 +4,33 @@ body, html {
     padding: 0;
     overflow: hidden;
     /* height: 350px; */
-    height: 500px;
+    height: 400px;
     width: 300px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     position: relative;
     font-size: 11px;
+    border: none;
+    background-color: #171717;
 }
 #header{
     position: absolute;
     top:20px;
     left: 20px;
+    /* height: 20px; */
+    /* width: 100%; */
+    /* display: flex; */
+    /* align-items: center; */
+
+      /* background: linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae ); */
+
     color:white;
     font-size: 11px;
+}
+
+#wraapper{
+  display: flex;
+  gap: 20px;
+  flex-direction: column;
 }
 a{
     text-decoration: none;
@@ -95,32 +110,32 @@ gap: 20px;
 align-items: center;
 position: absolute;
 bottom: 20px;
+padding-top: 10px;
 justify-content: center;
 width: 100%;
+background-color: #171717;
 /* flex-direction: column; */
-flex-wrap: wrap;
+/* flex-wrap: wrap; */
 }
 
 button{
-    padding: 7px;
-    border: none;
-    color: white;
-    font-size: 11px;
-    background:linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae );
-  
-    
-    border-radius: 5px;
-    cursor: pointer;
-    
+  color: white;
+  border: none;
+  padding: 9px;
+  border-radius:7px ;
+  background-color: #242424;
+  width: 120px;
+  cursor: pointer;
+  font-size: 11px;
+  transition: 0.3s ease-in;
 }
 
 button:hover{
-    background:linear-gradient(90deg, rgb(85, 17, 242) 0%, rgb(224, 16, 58) 100%);
-    /* padding: 11px; */
+color: rgb(235, 235, 235);
 
+background-color: #1b1a1a;
 
 }
-
 i{
     font-size: 11px;
     color: rgb(255, 255, 255);
@@ -167,7 +182,7 @@ i{
 
 
   body{
-    background-color: #242424;
+    background-color: #171717;
     color: #f2f2f2;
     margin: 0;
     padding: 0;
@@ -175,6 +190,7 @@ i{
     font-family: segoe ui;
     /* font-family: ; */
     /* overflow: hidden; */
+    border: none;
   }
   .selected {
     border:3px solid rgb(55, 51, 255);
@@ -212,22 +228,7 @@ i{
       animation: gradient 15s ease infinite;
       height: 100vh;
   }
-  button{
-      color: white;
-      border: none;
-      padding: 9px;
-      border-radius:7px ;
-      background-color: #242424;
-      cursor: pointer;
-      transition: 0.3s ease-in;
-  }
-  
-  button:hover{
-    color: rgb(235, 235, 235);
-  
-    background-color: #1b1a1a;
-   
-  }
+
   
   .Link{
     text-decoration: none;
@@ -235,6 +236,19 @@ i{
   
   }
   
+#Extension_Logo{
+
+  /* background: linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae ); */
+  height: 60vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0;
+
+  width: 100%;
+}
+
+
   @keyframes gradient {
       0% {
           background-position: 0% 50%;

@@ -74,7 +74,6 @@ async function changeTheme() {
 
 
 
-
 // ==========================================Font Colors =============================================================================
 
 document.getElementById('FontColors').addEventListener('click', () => {
