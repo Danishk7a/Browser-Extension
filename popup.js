@@ -319,7 +319,7 @@ document.getElementById('toggleEditMode').addEventListener('click', function() {
     let selectedElement = null;
   
     const style = document.createElement('style');
-    style.classList.add('resizable')
+    // style.classList.add('resizable')
     style.textContent = `
       .extension-selected-outline {
         outline: 2px solid #0066ff;
@@ -1136,42 +1136,42 @@ document.getElementById('openbuilder').addEventListener('click', () => {
 
 // ---------------------------------------------------------------Gradient Generator -----------------------------------------------
 
-const color1Input = document.getElementById('color1');
-const color2Input = document.getElementById('color2');
-const angleInput = document.getElementById('angle');
-const gradientBox = document.getElementById('gradientBox');
-const cssCode = document.getElementById('cssCode');
-const angleValue = document.getElementById('angleValue');
+// const color1Input = document.getElementById('color1');
+// const color2Input = document.getElementById('color2');
+// const angleInput = document.getElementById('angle');
+// const gradientBox = document.getElementById('gradientBox');
+// const cssCode = document.getElementById('cssCode');
+// const angleValue = document.getElementById('angleValue');
 
-function updateGradient() {
-  const color1 = color1Input.value;
-  const color2 = color2Input.value;
-  const angle = angleInput.value;
+// function updateGradient() {
+//   const color1 = color1Input.value;
+//   const color2 = color2Input.value;
+//   const angle = angleInput.value;
 
-  const gradient = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
-  gradientBox.style.background = gradient;
-  cssCode.textContent = `background: ${gradient};`;
-  angleValue.textContent = `${angle}°`;
-}
+//   const gradient = `linear-gradient(${angle}deg, ${color1}, ${color2})`;
+//   gradientBox.style.background = gradient;
+//   cssCode.textContent = `background: ${gradient};`;
+//   angleValue.textContent = `${angle}°`;
+// }
 
-function copyToClipboard() {
-  const code = cssCode.textContent;
-  const textarea = document.createElement('textarea');
-  textarea.value = code;
-  document.body.appendChild(textarea);
-  textarea.select();
-  document.execCommand('copy');
-  document.body.removeChild(textarea);
-  alert("CSS Code copied to clipboard!");
-}
+// function copyToClipboard() {
+//   const code = cssCode.textContent;
+//   const textarea = document.createElement('textarea');
+//   textarea.value = code;
+//   document.body.appendChild(textarea);
+//   textarea.select();
+//   document.execCommand('copy');
+//   document.body.removeChild(textarea);
+//   alert("CSS Code copied to clipboard!");
+// }
 
-color1Input.addEventListener('input', updateGradient);
-color2Input.addEventListener('input', updateGradient);
-angleInput.addEventListener('input', updateGradient);
-cssCode.addEventListener('click', copyToClipboard);
+// color1Input.addEventListener('input', updateGradient);
+// color2Input.addEventListener('input', updateGradient);
+// angleInput.addEventListener('input', updateGradient);
+// cssCode.addEventListener('click', copyToClipboard);
 
 
-updateGradient();
+// updateGradient();
 
 // ---------------------------------------------------------------Gradient Generator -----------------------------------------------
 
@@ -1244,10 +1244,169 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+document.addEventListener('DOMContentLoaded', () => {
+
+  document.getElementById('home-nav').click();
+
+})
+
+
+// Click event for the "color-nav" element
+document.getElementById('color-nav').addEventListener('click', () => {
+  const outlet = document.getElementById('outlet');
+  outlet.innerHTML = '';
+  const colorsPage = document.getElementById('colorsPage').style.display = 'flex';
+
+   document.getElementById('viewPage').style.display = 'none'
+   document.getElementById('Responsive').style.display = 'none';
+
+
+
+   const navLink2 = document.getElementById('color-nav');
+   navLink.style.textDecoration = 'underline #0AB76E'
+   navLink.style.textUnderlineOffset = '8px'
+
+
+const navLink = document.getElementById('home-nav');
+navLink.style.textDecoration = 'none'
+navLink.style.textUnderlineOffset = 'none'
+
+
+const navLink3 = document.getElementById('view-nav');
+navLink.style.textDecoration = 'none'
+navLink.style.textUnderlineOffset = 'none'
+
+  
+
+  outlet.appendChild(colorsPage);
+});
+
+
+
+
+// Click event for the "home-nav" element
+document.getElementById('home-nav').addEventListener('click', () => {
+  const outlet = document.getElementById('outlet');
+  outlet.innerHTML = ''; // Clear the current content
+  const homePage = document.getElementById('Responsive').style.display = 'flex';
+  
+  
+  // Hide other pages
+  document.getElementById('colorsPage').style.display = 'none';
+  document.getElementById('viewPage').style.display = 'none'
+ 
+
+  const navLink = document.getElementById('home-nav');
+  navLink.style.textDecoration = 'underline #0AB76E'
+  navLink.style.textUnderlineOffset = '8px'
+  
+  const navLink2 = document.getElementById('color-nav');
+  navLink.style.textDecoration = 'none'
+  navLink.style.textUnderlineOffset = 'none'
+  
+  const navLink3 = document.getElementById('view-nav');
+  navLink.style.textDecoration = 'none'
+  navLink.style.textUnderlineOffset = 'none'
+  
+  
+
+  outlet.appendChild(homePage);
 
 
 
 
 
 
+});
 
+
+
+
+// Click event for the "view-nav" element
+document.getElementById('view-nav').addEventListener('click', () => {
+  const outlet = document.getElementById('outlet');
+  outlet.innerHTML = ''; 
+  const viewPage = document.getElementById('viewPage').style.display = 'flex';
+  
+  // Hide other pages
+  document.getElementById('colorsPage').style.display = 'none';
+  document.getElementById('Responsive').style.display = 'none';
+  
+
+  const navLink = document.getElementById('home-nav');
+  navLink.style.textDecoration = 'none'
+  navLink.style.textUnderlineOffset = 'none'
+  
+  const navLink2 = document.getElementById('color-nav');
+  navLink.style.textDecoration = 'none'
+  navLink.style.textUnderlineOffset = 'none'
+  
+  const navLink3 = document.getElementById('view-nav');
+  navLink.style.textDecoration = 'underline #0AB76E'
+  navLink.style.textUnderlineOffset = '8px'
+  
+  // Show the viewPage
+
+  outlet.appendChild(viewPage);
+});
+
+
+
+document.getElementById('MobileView').addEventListener('click', ()=>{
+  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+    chrome.scripting.executeScript({
+        target: {tabId: tabs[0].id},
+        function: MobileView
+    });
+});
+
+
+
+})
+
+function MobileView() {
+  // Step 1: Clone the entire body content
+  const clonedContent = document.body.cloneNode(true);
+
+  clonedContent.style.width = '350px'
+  clonedContent.style.height = '80vh'
+
+
+  // Step 2: Create and style the new container div
+  const mobileContainer = document.createElement('div');
+  mobileContainer.style.width = '100%'; // Adjust width for mobile view
+  mobileContainer.style.height = '100vh'; // Adjust height for mobile view
+  mobileContainer.style.backgroundColor = '#242424'; // Example background color
+  mobileContainer.style.display = 'flex';
+  mobileContainer.style.justifyContent = 'center';
+  mobileContainer.style.alignItems = 'center';
+  mobileContainer.style.overflowY = 'scroll'; // Ensure no overflow
+  mobileContainer.style.overflowX = 'hidden'; // Ensure no overflow
+
+  // Step 3: Append the cloned content to the new container
+  mobileContainer.appendChild(clonedContent);
+
+  // Step 4: Clear the original body content
+  document.body.innerHTML = '';
+
+  // Step 5: Append the new container to the body
+  document.body.appendChild(mobileContainer);
+}
+
+
+// script.js
+document.getElementById('generate').addEventListener('click', () => {
+  const color1 = document.getElementById('color1').value;
+  const color2 = document.getElementById('color2').value;
+  const type = document.getElementById('type').value;
+
+  let gradientType;
+  if (type === 'linear') {
+      gradientType = `linear-gradient(to right, ${color1}, ${color2})`;
+  } else if (type === 'radial') {
+      gradientType = `radial-gradient(circle, ${color1}, ${color2})`;
+  }
+
+  const gradientBox = document.getElementById('gradientBox');
+  gradientBox.style.background = gradientType;
+});

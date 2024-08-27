@@ -12,48 +12,84 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+<div id="extension-popup ">
 
+    
     <div id="header">#ReDesign</div>
-
-   
-
-
-<!-- <input type="range" min="0" max="100" step="0.1" value="1" class="slider" id="fontSizeSlider"> -->
 
 
     <div id="Extension_Logo"> 
         <img src="x3.gif" height="300px" width="100%"  alt="">
     </div>
+        <div id="Display"></div>
 
 
+        
+    <div id="Nav">
+        <div id="home-nav" class="nav-items">Home</div>
+        <div id="color-nav" class="nav-items">Colors</div>
+        <div id="view-nav" class="nav-items">View</div>
+        <div id="user-nav" class="nav-items">User</div>
 
-    <div id="Display"></div>
 
-
-
-
-
-<div id="Responsive">
-    
-   <div id="wraapper">
-    <button id="colorPickerButton"><i class="fa-solid fa-eye-dropper"></i> &nbsp; Pick Color</button>
-    <button id="changeTheme"><i class="fa-solid fa-palette"></i> &nbsp; Change Theme</button>
-    <button id="FontColors"><i class="fa-solid fa-pen"></i> Font Colors</button>
-    
    </div>
-    
-    
-<div  id="wraapper">
-    <button id="ChangeFontfamily"> <i class="fa-solid fa-font"></i> Font Family</button>
-    <button id="toggleEditMode"> <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Mode</button>
-       <button id="openbuilder"> <i class="fa-solid fa-pen-to-square"></i> &nbsp;Page Builder</button>
+
+
+
+<div id="outlet">
+   
 </div>
 
+<div class="hidden" id="Responsive">
+    
+    <div id="wraapper">
+     <button id="colorPickerButton"><i class="fa-solid fa-eye-dropper"></i> &nbsp; Pick Color</button>
+     <button id="changeTheme"><i class="fa-solid fa-palette"></i> &nbsp; Change Theme</button>
+     <button id="FontColors"><i class="fa-solid fa-pen"></i> Font Colors</button>
+     
+    </div>
+     
+     
+ <div  id="wraapper">
+     <button id="ChangeFontfamily"> <i class="fa-solid fa-font"></i> Font Family</button>
+     <button id="toggleEditMode"> <i class="fa-solid fa-pen-to-square"></i> &nbsp;Edit Mode</button>
+        <button id="openbuilder"> <i class="fa-solid fa-pen-to-square"></i> &nbsp;Page Builder</button>
+ </div>
+ 
+ 
+ 
+ </div> 
 
+<div class="hidden" id="colorsPage">
 
-</div> 
+    <div class="container">
+       
+        <div class="controls">
+        
+            <input type="color" id="color1" value="#ff0000">
+      
+            <input type="color" id="color2" value="#0000ff">
+            
+            <select id="type">
+                <option value="linear">Linear</option>
+                <option value="radial">Radial</option>
+            </select>
+        </div>
+        <div class="preview">
+            <div id="gradientBox"></div>
+        </div>
+        <button id="generate">Generate Gradient</button>
+    </div>
+   
 
+</div>
 
+<div class="hidden"  id="viewPage">
+   <button id="MobileView">Mobile View</button>
+
+</div>
+
+</div>
 
 <script   src="popup.js"></script>
 </body>
