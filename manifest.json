@@ -10,12 +10,17 @@
       "48": "./logo.png"
     }
   },
-  "content_scripts": [
-        {
-            "matches": ["<all_urls>"], 
-            "js": ["content.js"] 
-        }
-    ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "commands": {
+    "openExtension": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Z"
+      },
+      "description": "Open the extension"
+    }
+  },
   "permissions": [
     "activeTab",
     "scripting",
