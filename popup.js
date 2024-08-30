@@ -169,6 +169,11 @@ document.addEventListener('keydown', (event) => {
   document.getElementById('ChangeFontfamily').click()
   }
 });
+
+
+
+
+
 document.getElementById('ChangeFontfamily').addEventListener('click', () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         const tabId = tabs[0].id;
@@ -205,8 +210,7 @@ const elements = document.querySelectorAll('*');
     let index = Math.floor(Math.random() * fonts.length);
     let selectedFont = fonts[index];
 
-    console.log("look this ", document.getElementById('Display'))
-     
+    document.getElementById('Display')     
      elements.forEach(el => {
       el.style.fontFamily = selectedFont;
      
@@ -333,12 +337,12 @@ document.getElementById('Display').addEventListener('click', function() {
 
 // ===========================================================Element Manipulation =====================================================
 
-document.addEventListener('DOMContentLoaded', ()=>{
+// document.addEventListener('DOMContentLoaded', ()=>{
 
-  document.getElementById('toggleEditMode').click()
+//   document.getElementById('toggleEditMode').click()
 
 
-})
+// })
 
 
 document.addEventListener('keypress', function(event) {
@@ -785,7 +789,27 @@ handle.style.cssText = `
           updateCSSCode();
 
 
+      }else if(event.key === 'm'){
+
+        
+const fonts = [
+  'Courier', 'monospace', 'Segoe UI', 'Helvetica', 'Arial', 'Roboto',
+  'Verdana', 'sans-serif', 'Times New Roman', 'Cambria', 'Cochin', 'Simpsonfont','VITAMINO','Youaretheone'
+];
+
+let index = Math.floor(Math.random() * fonts.length);
+let selectedFont = fonts[index];
+        selectedElement.style.fontFamily =selectedFont   ;
+        updateCSSCode();
+
+
+      }else if(event.key === 'n'){
+        selectedElement.style.color = getRandomColor();
+        updateCSSCode();
+
+
       }
+
 
 
 
@@ -1415,6 +1439,28 @@ document.getElementById('view-nav').addEventListener('click', () => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// -------------------------------------------------------------Mobile Responsive -------------------------------------------
+
 document.getElementById('MobileView').addEventListener('click', ()=>{
   chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
     chrome.scripting.executeScript({
@@ -1427,34 +1473,73 @@ document.getElementById('MobileView').addEventListener('click', ()=>{
 
 })
 
+
+
 function MobileView() {
-  // Step 1: Clone the entire body content
-  const clonedContent = document.body.cloneNode(true);
+  // Check if the simulator already exists
+  if (document.getElementById('mobile-view-simulator')) {
+      return;
+  }
 
-  clonedContent.style.width = '350px'
-  clonedContent.style.height = '80vh'
+  // Create the simulator container
+  const simulator = document.createElement('div');
+  simulator.id = 'mobile-view-simulator';
+  simulator.style.position = 'fixed';
+
+  simulator.style.zIndex = '9999';
+  simulator.style.backgroundColor = 'transparent';
+
+  // simulator.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+  // simulator.style.borderRadius = '40px'
 
 
-  // Step 2: Create and style the new container div
-  const mobileContainer = document.createElement('div');
-  mobileContainer.style.width = '100%'; // Adjust width for mobile view
-  mobileContainer.style.height = '100vh'; // Adjust height for mobile view
-  mobileContainer.style.backgroundColor = '#242424'; // Example background color
-  mobileContainer.style.display = 'flex';
-  mobileContainer.style.justifyContent = 'center';
-  mobileContainer.style.alignItems = 'center';
-  mobileContainer.style.overflowY = 'scroll'; // Ensure no overflow
-  mobileContainer.style.overflowX = 'hidden'; // Ensure no overflow
+  simulator.style.top = '0';
+  simulator.style.left = '0';
+  simulator.style.width = '100vw';
+  simulator.style.height = '100vh';
+  simulator.style.display = 'flex';
+  simulator.style.justifyContent = 'center';
+  simulator.style.alignItems = 'center';
+  simulator.style.padding = '20px';
+  
 
-  // Step 3: Append the cloned content to the new container
-  mobileContainer.appendChild(clonedContent);
 
-  // Step 4: Clear the original body content
-  document.body.innerHTML = '';
+  // Create the phone frame
+  const phoneFrame = document.createElement('div');
+  phoneFrame.style.width = '375px'; // iPhone X width
+  phoneFrame.style.height = '90vh';
+  phoneFrame.style.backgroundColor = '#000';
+  phoneFrame.style.borderRadius = '40px';
+  phoneFrame.style.padding = '20px';
+  phoneFrame.style.boxSizing = 'border-box';
 
-  // Step 5: Append the new container to the body
-  document.body.appendChild(mobileContainer);
+  // Create the screen area
+  const screen = document.createElement('div');
+  screen.style.width = '100%';
+  screen.style.height = '100%';
+  screen.style.backgroundColor = '#fff';
+  screen.style.borderRadius = '30px';
+  screen.style.overflow = 'hidden';
+
+  // Create the iframe to load the current page
+  const iframe = document.createElement('iframe');
+  iframe.style.width = '100%';
+  iframe.style.height = '100%';
+  iframe.style.border = 'none';
+  iframe.src = window.location.href;
+
+  // Assemble the components
+  screen.appendChild(iframe);
+  phoneFrame.appendChild(screen);
+  simulator.appendChild(phoneFrame);
+
+  // Create close button
+
+
+  // Add the simulator to the page
+  document.body.innerHTML = ''
+  document.body.appendChild(simulator);
 }
 
 
-
+// -------------------------------------------------------------Mobile Responsive -------------------------------------------
