@@ -1,38 +1,38 @@
 {
   "manifest_version": 3,
-  "name": "Color Theme Changer",
+  "name": "ReDesign",
   "version": "1.0",
   "description": "Change the theme of any website with random colors.",
-  "action": {
-    "default_popup": "popup.html",
+  "action":{
     "default_icon": {
       "16": "./logo.png",
       "48": "./logo.png"
     }
-  },
+  }
+  ,
+ 
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+        "run_at": "document_end"
     }
   ],
   "background": {
     "service_worker": "background.js"
   },
-  "commands": {
-    "openExtension": {
-      "suggested_key": {
-        "default": "Ctrl+Shift+Z"
-      },
-      "description": "Open the extension"
-    }
-  },
   "permissions": [
+      "sidePanel",
     "activeTab",
+
     "scripting",
     "background",
     "storage"
+  
   ],
+  "side_panel": {
+    "default_path": "sidebar.html"
+  },
   "host_permissions": [
     "<all_urls>"
   ],

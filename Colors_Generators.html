@@ -50,7 +50,7 @@
             <input type="number" id="numColors" value="5" min="2" max="10">
             <button onclick="generatePalette()">Generate Palette</button>
         </div>
-        <div id="palette"></div>
+        <div  id="palette"></div>
     </div>
 
     <script>
@@ -142,7 +142,8 @@
 
             palette.forEach(color => {
                 const colorBox = document.createElement('div');
-                colorBox.className = 'color-box';
+                colorBox.classList.add('color-box') 
+                colorBox.classList.add('not-editable');
                 colorBox.style.backgroundColor = color;
                 colorBox.title = color;
                 paletteDiv.appendChild(colorBox);

@@ -1,0 +1,17 @@
+@font-face {
+    font-family: 'dejavu';
+    src: url('fonts/DejaVuSansCondensed.ttf') format('woff');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'ok';
+    src: url('fonts/587/AFTEDI__.TTF') format('woff');
+    font-weight: bold;
+    font-style: normal;
+}
+
+body {
+    font-family: 'dejavu';
+}

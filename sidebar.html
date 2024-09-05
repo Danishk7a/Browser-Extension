@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Sidebar</title>
+</head>
+<style>
+  body{
+    background-color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    
+  }
+    #sidemenu{
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 0;
+        margin: 0;
+  }
+  #nav{
+    display: flex;
+    gap:20px;
+    justify-content: space-around;
+    align-items: center;
+    height: 5vh;
+    /* background-color: aqua; */
+  }
+</style>
+<body>
+  
+  <div id="sidemenu" >
+
+    <div id="nav">
+      <div id="structure">Structure</div>
+      <div id="style">Style</div>
+      <div id="Advance">Advance</div>
+
+    </div>
+ 
+
+
+    <div id="structure">
+  
+  
+
+     <div style="display: flex; flex-direction: column; 10px; gap: 6px; border:1px solid #ffffff">
+      <div style="width: 10%;">height</div>
+<div>      <input name="height"  class="height" style="width: 10%;" type="number"> <span>px</span></div>
+        <input  class="height" min="0" max="1000" step="5" style="width: 40%;"  type="range" name="height" id="">
+   </div>
+
+   <div style="display: flex; flex-direction: column; 10px; gap: 6px; border:1px solid #ffffff">
+    <div style="width: 10%;">Width</div>
+<div>      <input name="width" style="width: 10%;" type="number"> <span>px</span></div>
+      <input name="width" style="width: 40%;"  type="range" name="" id="">
+ </div>
+  
+
+
+   <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff ">
+  
+    <span style="width: 10%;">Padding</span>
+    
+    
+   <div>
+    <div style="width: 40%;">
+      <input name="paddingTop"  style="width: 10%;" type="number">
+    <input  name="paddingRight" style="width: 10%;" type="number">
+    <input name="paddingLeft" style="width: 10%;" type="number">
+    <input name="paddingBottom" style="width: 10%;" type="number">
+    <span>px</span>
+    </div>
+      
+    <input min="0" max="1000" step="5"  name="padding" style="width: 20%;" type="range" name="" id="">
+   </div>
+  
+  </div>
+
+
+
+<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff">
+  
+  <span style="width: 10%;">Margin</span>
+  
+  
+ <div>
+  <div style="width: 40%;">
+    <input name="marginTop" style="width: 10%;" type="number">
+  <input name="marginRight" style="width: 10%;" type="number">
+  <input  name="marginLeft"style="width: 10%;" type="number">
+  <input name="marginBottom" style="width: 10%;" type="number">
+  <span>px</span>
+  </div>
+    
+  <input min="0" max="1000" step="5" name="margin" style="width: 20%;" type="range" name="" id="">
+ </div>
+
+</div>
+   
+
+
+<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff">
+  
+  <span style="width: 10%;">Border</span>
+  
+  
+ <div>
+  <div style="width: 40%;">
+    <input name="borderTop" style="width: 10%;" type="number">
+  <input  name="borderRight"  style="width: 10%;" type="number">
+  <input   name="borderLeft"  style="width: 10%;" type="number">
+  <input  name="borderBottom"  style="width: 10%;" type="number">
+  <span>px</span>
+  </div>
+    
+  <input  min="0" max="1000" step="5" name="border"  style="width: 20%;" type="range" name="" id="">
+ </div>
+
+</div>
+
+
+
+<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px; border:1px solid #ffffff">
+  
+  <span style="width: 10%;">Box Shadow</span>
+  
+  
+ <div>
+  <div style="width: 40%;">
+    <input style="width: 10%;" type="number">
+  <input style="width: 10%;" type="number">
+  <input style="width: 10%;" type="number">
+  <input style="width: 10%;" type="number">
+  <span>px</span>
+  </div>
+
+  <input type="color">
+    
+  <input name="backgroundColor" style="width: 20%;" type="range" name="" id="">
+ </div>
+
+</div>
+
+   
+    </div>
+
+  </div>
+
+
+  
+  
+
+
+
+
+
+
+
+
+
+ 
+ 
+ 
+ 
+ 
+  <script src="sidebar.js"></script>
+</body>
+</html>
