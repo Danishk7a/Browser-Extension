@@ -4,27 +4,55 @@
   <title>Sidebar</title>
 </head>
 <style>
-  body{
-    background-color: #f0f0f0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    
-  }
-    #sidemenu{
-        display: flex;
-        flex-direction: column;
-        gap: 20px;
-        padding: 0;
-        margin: 0;
-  }
-  #nav{
-    display: flex;
-    gap:20px;
-    justify-content: space-around;
-    align-items: center;
-    height: 5vh;
-    /* background-color: aqua; */
-  }
+ body{
+  /* overflow: hidden; */
+ }
+
+#outlet{
+  height: 60vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}
+ 
+
+#code{
+  height: 30vh;
+  background-color: #ffffff;
+} 
+ 
+.cssKey{
+  color: blue;
+  font-weight:bold ;
+
+}
+.box{
+  height: 70px;
+  width: 70px;
+  background-color: #c6c6c6;
+  
+}
+
+#addElementsContent{
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+  gap:20px;
+}
+.cssValue{
+  color: #000;
+  font-style: italic;
+  font-weight: normal;
+}
+
+.cssValueinpercentage{
+  color: #a1226f;
+  font-style: italic;
+  font-weight: normal;
+
+}
 </style>
+<link rel="stylesheet" href="sidebar.css">
 <body>
   
   <div id="sidemenu" >
@@ -32,116 +60,179 @@
     <div id="nav">
       <div id="structure">Structure</div>
       <div id="style">Style</div>
-      <div id="Advance">Advance</div>
+      <div id="addElements">Add Elements</div>
+
+     
 
     </div>
  
 
+    <div id="outlet">
 
-    <div id="structure">
-  
-  
-
-     <div style="display: flex; flex-direction: column; 10px; gap: 6px; border:1px solid #ffffff">
-      <div style="width: 10%;">height</div>
-<div>      <input name="height"  class="height" style="width: 10%;" type="number"> <span>px</span></div>
-        <input  class="height" min="0" max="1000" step="5" style="width: 40%;"  type="range" name="height" id="">
-   </div>
-
-   <div style="display: flex; flex-direction: column; 10px; gap: 6px; border:1px solid #ffffff">
-    <div style="width: 10%;">Width</div>
-<div>      <input name="width" style="width: 10%;" type="number"> <span>px</span></div>
-      <input name="width" style="width: 40%;"  type="range" name="" id="">
- </div>
-  
-
-
-   <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff ">
-  
-    <span style="width: 10%;">Padding</span>
-    
-    
-   <div>
-    <div style="width: 40%;">
-      <input name="paddingTop"  style="width: 10%;" type="number">
-    <input  name="paddingRight" style="width: 10%;" type="number">
-    <input name="paddingLeft" style="width: 10%;" type="number">
-    <input name="paddingBottom" style="width: 10%;" type="number">
-    <span>px</span>
-    </div>
       
-    <input min="0" max="1000" step="5"  name="padding" style="width: 20%;" type="range" name="" id="">
-   </div>
+    <div id="structureContent">
   
-  </div>
+  
 
-
-
-<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff">
-  
-  <span style="width: 10%;">Margin</span>
-  
-  
- <div>
-  <div style="width: 40%;">
-    <input name="marginTop" style="width: 10%;" type="number">
-  <input name="marginRight" style="width: 10%;" type="number">
-  <input  name="marginLeft"style="width: 10%;" type="number">
-  <input name="marginBottom" style="width: 10%;" type="number">
-  <span>px</span>
-  </div>
+      <div style="display: flex;gap: 20px;">
+        <div style="display: flex; flex-direction: column; 10px; gap: 6px;">
+          <div style="width: 10%;">height</div>
+    <div>      <input name="height"  class="height" style="width: 80%;" type="number"> <span>px</span></div>
+            <input  class="height" min="0" max="1000" step="5" style="width: 80%;"  type="range" name="height" id="">
+       </div>
     
-  <input min="0" max="1000" step="5" name="margin" style="width: 20%;" type="range" name="" id="">
- </div>
-
-</div>
+       <div style="display: flex; flex-direction: column; 10px; gap: 6px; ">
+        <div style="width: 10%;">Width</div>
+        <div>      <input name="width" style="width: 80%;" type="number"> <span>px</span></div>
+        <input name="width" style="width: 80%;" min="0" max="100" step="5"   type="range" name="" id="">
+     </div>
+      </div>
    
-
-
-<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;border:1px solid #ffffff">
-  
-  <span style="width: 10%;">Border</span>
-  
-  
- <div>
-  <div style="width: 40%;">
-    <input name="borderTop" style="width: 10%;" type="number">
-  <input  name="borderRight"  style="width: 10%;" type="number">
-  <input   name="borderLeft"  style="width: 10%;" type="number">
-  <input  name="borderBottom"  style="width: 10%;" type="number">
-  <span>px</span>
-  </div>
-    
-  <input  min="0" max="1000" step="5" name="border"  style="width: 20%;" type="range" name="" id="">
- </div>
-
-</div>
-
-
-
-<div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px; border:1px solid #ffffff">
-  
-  <span style="width: 10%;">Box Shadow</span>
-  
-  
- <div>
-  <div style="width: 40%;">
-    <input style="width: 10%;" type="number">
-  <input style="width: 10%;" type="number">
-  <input style="width: 10%;" type="number">
-  <input style="width: 10%;" type="number">
-  <span>px</span>
-  </div>
-
-  <input type="color">
-    
-  <input name="backgroundColor" style="width: 20%;" type="range" name="" id="">
- </div>
-
-</div>
-
+ 
+ 
+    <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px; ">
    
+     <span style="width: 10%;">Padding</span>
+     
+     
+    <div>
+     <div style="width: 100%;">
+       <input name="paddingTop"  style="width: 20%;" type="number">
+     <input  name="paddingRight" style="width: 20%;" type="number">
+     <input name="paddingLeft" style="width: 20%;" type="number">
+     <input name="paddingBottom" style="width: 20%;" type="number">
+     <span style="width: 20%;">px</span>
+     </div>
+       
+     <input min="0" max="1000" step="5"  name="padding" style="width: 80%;" type="range" name="" id="">
     </div>
+   
+   </div>
+ 
+ 
+ 
+ <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;">
+   
+   <span style="width: 10%;">Margin</span>
+   
+  <div>
+   <div style="width: 100%;">
+     <input name="marginTop" style="width: 20%;" type="number">
+   <input name="marginRight" style="width: 20%;" type="number">
+   <input  name="marginLeft"style="width: 20%;" type="number">
+   <input name="marginBottom" style="width: 20%;" type="number">
+   <span>px</span>
+   </div>
+     
+   <input min="0" max="1000" step="5" name="margin" style="width: 80%;" type="range" name="" id="">
+  </div>
+ 
+ </div>
+    
+ 
+ 
+ <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px;">
+   
+   <span style="width: 10%;">Border</span>
+   
+   
+  <div>
+   <div style="width: 100%;">
+     <input name="borderTop" style="width: 20%;" type="number">
+   <input  name="borderRight"  style="width: 20%;" type="number">
+   <input   name="borderLeft"  style="width: 20%;" type="number">
+   <input  name="borderBottom"  style="width: 20%;" type="number">
+   <span>px</span>
+   </div>
+     
+   <input  min="0" max="1000" step="5" name="border"  style="width: 80%;" type="range" name="" id="">
+  </div>
+ 
+ </div>
+ 
+ 
+ 
+ <div style="display: flex; flex-direction: column; justify-content: ;align-items: ;gap: 6px;padding: 10px 10px; ">
+   
+   <span style="width: 20%;">Box Shadow</span>
+   
+   
+  <div>
+   <div style="width: 100%;">
+     <input style="width: 20%;" type="number">
+   <input style="width: 20%;" type="number">
+   <input style="width: 20%;" type="number">
+   <input style="width: 20%;" type="number">
+   <span>px</span>
+   </div>
+ 
+
+     
+   <input  style="width: 80%;" type="range" name="" id="">
+  </div>
+ 
+ </div>
+ 
+    
+     </div>
+
+     <div id="styleContent"> 
+
+      <button id="ChangeTheme">Change Theme</button>
+
+      <input  name="backgroundColor"type="color">
+   
+
+
+      <br>
+
+      <br>
+      <div id="myDiv"></div>
+      <button id="upload"> Upload</button>
+      <button id="toggleDrag">Enable Drag</button>
+
+     </div>
+
+     <div id="addElementsContent">
+       
+      <div class="box" id="text" draggable="true">Add Text</div>
+      <div class="box" id="img" draggable="true">Add Image</div>
+      <div class="box" id="canvas" draggable="true">Add Canvas</div>
+
+     </div>
+
+
+    </div>
+
+
+
+    <div id="code">
+    
+      <div class="style-display"></div>
+        <h2>Styles</h2>
+        <p class="cssKey">Height: <span class="cssValue" id="height-px"></span> px / <span class="cssValueinpercentage" id="height-percent"></span> %</p>
+        <p class="cssKey">Width: <span  class="cssValue"  id="width-px"></span> px / <span class="cssValueinpercentage" id="width-percent"></span> %</p>
+        <!-- <p class="cssKey">Padding Top: <span  class="cssValue"  id="padding-top-px"></span> px / <span  class="cssValueinpercentage"id="padding-top-percent"></span> %</p>
+        <p class="cssKey">Padding Right: <span  class="cssValue"  id="padding-right-px"></span> px / <span  class="cssValueinpercentage" id="padding-right-percent"></span> %</p>
+        <p class="cssKey">Padding Bottom: <span  class="cssValue"  id="padding-bottom-px"></span> px / <span  class="cssValueinpercentage"id="padding-bottom-percent"></span> %</p>
+        <p class="cssKey">Padding Left: <span   class="cssValue"  id="padding-left-px"></span> px / <span class="cssValueinpercentage" id="padding-left-percent"></span> %</p>
+        <p class="cssKey">Margin Top: <span   class="cssValue"  id="margin-top-px"></span> px / <span class="cssValueinpercentage" id="margin-top-percent"></span> %</p>
+        <p class="cssKey">Margin Right: <span  class="cssValue"  id="margin-right-px"></span> px / <span class="cssValueinpercentage" id="margin-right-percent"></span> %</p>
+        <p class="cssKey">Margin Bottom: <span  class="cssValue"  id="margin-bottom-px"></span> px / <span class="cssValueinpercentage" id="margin-bottom-percent"></span> %</p>
+        <p class="cssKey">Margin Left: <span  class="cssValue"  id="margin-left-px"></span> px / <span class="cssValueinpercentage" id="margin-left-percent"></span> %</p>
+   
+   
+    -->
+   
+   
+      </div>
+
+
+    </div>
+
+
+
+
 
   </div>
 
@@ -163,5 +254,6 @@
  
  
   <script src="sidebar.js"></script>
+  <script src="sidebarHandles.js"></script>
 </body>
 </html>

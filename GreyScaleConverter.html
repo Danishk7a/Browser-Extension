@@ -3,53 +3,93 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Convert Image to Grayscale</title>
+    <title>Toggle Drag to Move Background Image</title>
+    <style>
+        #myDiv {
+            width: 100%;
+            height: 300px;
+            background: center / cover;
+
+            /* border: 1px solid #ddd; */
+            /* position: relative; */
+            /* overflow: hidden;  */
+        }
+
+        /* #imageInput, #toggleDrag {
+            margin: 20px 0;
+            display: block;
+        }
+
+        #toggleDrag {
+            cursor: pointer;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+
+        #toggleDrag.disabled {
+            background-color: #6c757d;
+        } */
+    </style>
 </head>
 <body>
-    <input type="file" id="fileInput" />
-    <img id="originalImage" style="display:none;" />
-    <img id="grayscaleImage" />
+    <div id="myDiv"></div>
+    <input type="file" id="imageInput" accept="image/*">
+    <!-- <button id="toggleDrag">Enable Drag</button> -->
     
     <script>
-        document.getElementById('fileInput').addEventListener('change', function(event) {
+        let isDragging = false;
+        let dragEnabled = true; // Track whether dragging mode is enabled
+        let startX, startY;
+        let initialBackgroundPositionX, initialBackgroundPositionY;
+
+        function handleImageUpload(event) {
             const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const img = document.createElement('img');
-                img.src = e.target.result;
-
-                img.onload = function() {
-                    const width = img.width;
-                    const height = img.height;
-                    const grayscaleCanvas = document.createElement('canvas');
-                    grayscaleCanvas.width = width;
-                    grayscaleCanvas.height = height;
-                    const ctx = grayscaleCanvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0);
-
-                    const imageData = ctx.getImageData(0, 0, width, height);
-                    const data = imageData.data;
-
-                    // Convert to grayscale
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        const avg = (r + g + b) / 3;
-                        data[i] = data[i + 1] = data[i + 2] = avg;
-                    }
-
-                    ctx.putImageData(imageData, 0, 0);
-
-                    // Set the grayscale image source
-                    document.getElementById('grayscaleImage').src = grayscaleCanvas.toDataURL();
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const div = document.getElementById('myDiv');
+                    div.style.backgroundImage = `url('${e.target.result}')`;
+                   
                 };
-            };
+                reader.readAsDataURL(file);
+            }
+        }
 
-            reader.readAsDataURL(file);
-        });
+        function startDrag(event) {
+            if (!dragEnabled) return; // Only start dragging if dragging mode is enabled
+            isDragging = true;
+            startX = event.clientX;
+            startY = event.clientY;
+            const div = document.getElementById('myDiv');
+            const computedStyle = window.getComputedStyle(div);
+            const bgPos = computedStyle.backgroundPosition.split(' ');
+            initialBackgroundPositionX = parseFloat(bgPos[0]);
+            initialBackgroundPositionY = parseFloat(bgPos[1]);
+        }
+
+        function drag(event) {
+            if (!isDragging) return;
+            const div = document.getElementById('myDiv');
+            const dx = event.clientX - startX;
+            const dy = event.clientY - startY;
+            div.style.backgroundPosition = `${initialBackgroundPositionX + dx}px ${initialBackgroundPositionY + dy}px`;
+        }
+
+        function stopDrag() {
+            isDragging = false;
+        }
+
+     
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
+
+        const myDiv = document.getElementById('myDiv');
+        myDiv.addEventListener('mousedown', startDrag);
+        window.addEventListener('mousemove', drag);
+        window.addEventListener('mouseup', stopDrag);
+
     </script>
 </body>
 </html>
