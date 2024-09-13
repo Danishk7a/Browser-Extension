@@ -1,70 +1,73 @@
-// content-script.js
+let selectionMode = false;
+let selectedElement = null;
 
-let sidebarOpen = false;
-
-function createSidebar() {
-  const sidebar = document.createElement('div');
-  sidebar.id = 'extension-sidebar';
-  sidebar.style.cssText = `
-    position: fixed;
-    top: 0;
-    right: -300px;
-    width: 300px;
-    height: 100%;
-    background-color: #f1f1f1;
-    transition: right 0.3s ease-in-out;
-    z-index: 1000;
-    padding: 20px;
-    box-sizing: border-box;
-  `;
-  sidebar.innerHTML = '<h2>Sidebar Content</h2><p>This is your sidebar. Add more content here!</p>';
-  document.body.appendChild(sidebar);
-}
-
-function toggleSidebar() {
-  const sidebar = document.getElementById('extension-sidebar');
-  if (sidebar) {
-    sidebarOpen = !sidebarOpen;
-    sidebar.style.right = sidebarOpen ? '0' : '-300px';
+// Toggle selection mode
+function toggleSelectionMode() {
+  selectionMode = !selectionMode;
+  document.body.style.cursor = selectionMode ? 'crosshair' : 'default';
+  if (selectionMode) {
+    document.addEventListener('click', onElementClick);
+  } else {
+    document.removeEventListener('click', onElementClick);
   }
-  return sidebarOpen;
 }
 
+// Handle element click
+function onElementClick(event) {
+  event.preventDefault();
+  event.stopPropagation();
+  
+  if (selectedElement) {
+    selectedElement.classList.remove('selected');
+  }
+  
+  selectedElement = event.target;
+  selectedElement.classList.add('selected');
+  
+  // Remove selection mode after selecting an element
+  toggleSelectionMode();
+  
+  // Optional: Highlight selected element
+  selectedElement.style.outline = '2px solid red';
+}
+
+// Get CSS for an element
+function getElementCSS(element) {
+  let css = '';
+  const sheets = [...document.styleSheets];
+  
+  sheets.forEach(sheet => {
+    try {
+      const rules = [...sheet.cssRules];
+      rules.forEach(rule => {
+        if (element.matches(rule.selectorText)) {
+          css += `${rule.selectorText} { ${rule.style.cssText} }\n`;
+        }
+      });
+    } catch (e) {
+      // Ignore cross-origin stylesheet issues
+    }
+  });
+  
+  return css;
+}
+
+// Get HTML for an element
+function getElementHTML(element) {
+  return element.outerHTML;
+}
+
+// Listen for messages from the background script
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.action === "toggleSidebar") {
-    const isOpen = toggleSidebar();
-    sendResponse({sidebarOpen: isOpen});
+  if (request.action === 'getElementCode') {
+    if (selectedElement) {
+      const html = getElementHTML(selectedElement);
+      const css = getElementCSS(selectedElement);
+      sendResponse({ html, css });
+    } else {
+      sendResponse({ html: '', css: '' });
+    }
+  } else if (request.action === 'toggleSelectionMode') {
+    toggleSelectionMode();
   }
-  return true; // Will respond asynchronously
 });
-
-// Create and append the button
-function createToggleButton() {
-  const button = document.createElement('button');
-  button.textContent = 'Toggle Sidebar';
-  button.style.position = 'fixed';
-  button.style.top = '10px';
-  button.style.right = '10px';
-  button.style.zIndex = '9999';
-  button.addEventListener('click', () => {
-    chrome.runtime.sendMessage({action: "toggleSidebar"}, function(response) {
-      if (chrome.runtime.lastError) {
-        console.error("Error:", chrome.runtime.lastError);
-      } else {
-        console.log("Sidebar toggled:", response.sidebarOpen);
-      }
-    });
-  });
-  document.body.appendChild(button);
-}
-
-// Run the script
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    createSidebar();
-    createToggleButton();
-  });
-} else {
-  createSidebar();
-  createToggleButton();
-}

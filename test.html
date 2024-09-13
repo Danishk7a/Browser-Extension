@@ -1,20 +1,78 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>Hello World!</title>
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-     <input type="range" name="hj" id="hj" value="" />
-      <script >
-        
-        document.getElementById('hj').addEventListener('input', function(e) {
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export HTML and CSS</title>
+    <link rel="stylesheet" href="test.css">
+    <style>
+        /* Example CSS */
+        #example {
+            border: 2px solid black;
+            padding: 10px;
+            color: rgb(135, 135, 135);
+        }
+    </style>
+</head>
+<body>
+    <div id="example">
+        <p>Child element with <span style="color: rgb(255, 255, 255);">inline style</span>.</p>
+        <img src="https://img.freepik.com/free-photo/abstract-autumn-beauty-multi-colored-leaf-vein-pattern-generated-by-ai_188544-9871.jpg" alt="">
+    </div>
+    <button id="exportButton">Export</button>
 
-console.log(e.target.value)
+    <script>
 
-});
 
-        
-      </script>
-  </body>
+
+        document.getElementById('exportButton').addEventListener('click', function() {
+            const element = document.getElementById('example');
+            const html = element.outerHTML;
+            const css = getAllCss();
+
+            console.log("CSS : " , css)
+
+            // Create a Blob for the HTML and CSS
+            const blob = new Blob([`<html><head><style>${css}</style></head><body>${html}</body></html>`], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+
+            // Create a link element and trigger a download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'export.html';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        function getAllCss() {
+            const sheets = Array.from(document.styleSheets);
+            let css = '';
+
+            sheets.forEach(sheet => {
+                try {
+                    const rules = Array.from(sheet.cssRules);
+                    rules.forEach(rule => {
+                        css += rule.cssText + '\n';
+                    });
+                } catch (e) {
+                   
+                }
+            });
+
+            return css;
+        }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    </script>
+</body>
 </html>

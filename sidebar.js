@@ -81,11 +81,58 @@ document.addEventListener('DOMContentLoaded', () => {
 
   };
 
+
+
   // Attach event listeners
   numberInputs.forEach(input => input.addEventListener('input', handleNumberInputChange));
   rangeInputs.forEach(input => input.addEventListener('input', handleRangeInputChange));
   colorInputs.forEach(input => input.addEventListener('input', handleColorInputChange));
+  document.getElementById('positionSelect').addEventListener('change', function(event) {
+    // Log information to the console
+    console.log("POSITIONS : ", event.target.id, " : ", event.target.value);
+
+    // Get the selected value
+    const selectedValue = event.target.value;
+
+    // Send a message to the content script
+    chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+            action: "changeStyle",
+            style: {
+                property: "position", // Fixed property name
+                value: selectedValue
+            }
+        });
+    });
 });
+
+
+
+});
+document.getElementById('widthUnit').addEventListener('click', (e) => {
+  const currentText = e.target.innerText;
+
+  switch (currentText) {
+      case 'px':
+          e.target.innerText = '%';
+          break;
+      case '%':
+          e.target.innerText = 'vh';
+          break;
+      case 'vh':
+          e.target.innerText = 'em';
+          break;
+      case 'em':
+          e.target.innerText = 'rem';
+          break;
+      case 'rem':
+          e.target.innerText = 'px';
+          break;
+      default:
+          e.target.innerText = 'px'; // Default case in case the text is unexpected
+  }
+});
+
 
 
 document.addEventListener('DOMContentLoaded', ()=>
@@ -132,30 +179,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("styling  : " ,  message.style);
 
-  // document.getElementById('code').innerHTML = '';
-  function displayStyles(data) {
-    // Update the content of each placeholder
-    document.getElementById('height-px').textContent = data.height.px;
-    document.getElementById('height-percent').textContent = data.height.percent;
-    document.getElementById('width-px').textContent = data.width.px;
-    document.getElementById('width-percent').textContent = data.width.percent;
-    document.getElementById('padding-top-px').textContent = data.padding.top.px;
-    document.getElementById('padding-top-percent').textContent = data.padding.top.percent;
-    document.getElementById('padding-right-px').textContent = data.padding.right.px;
-    document.getElementById('padding-right-percent').textContent = data.padding.right.percent;
-    document.getElementById('padding-bottom-px').textContent = data.padding.bottom.px;
-    document.getElementById('padding-bottom-percent').textContent = data.padding.bottom.percent;
-    document.getElementById('padding-left-px').textContent = data.padding.left.px;
-    document.getElementById('padding-left-percent').textContent = data.padding.left.percent;
-    document.getElementById('margin-top-px').textContent = data.margin.top.px;
-    document.getElementById('margin-top-percent').textContent = data.margin.top.percent;
-    document.getElementById('margin-right-px').textContent = data.margin.right.px;
-    document.getElementById('margin-right-percent').textContent = data.margin.right.percent;
-    document.getElementById('margin-bottom-px').textContent = data.margin.bottom.px;
-    document.getElementById('margin-bottom-percent').textContent = data.margin.bottom.percent;
-    document.getElementById('margin-left-px').textContent = data.margin.left.px;
-    document.getElementById('margin-left-percent').textContent = data.margin.left.percent;
+
+ const container  =  document.getElementById('code')
+ container.innerHTML = ''
+  for (const [property, value] of Object.entries(message.style)) {
+    const div = document.createElement('div');
+    div.className = 'property';
+    div.innerHTML = `<span class="property-name">${property}:</span> ${value}`;
+    container.appendChild(div);
 }
+
 
 displayStyles( message.style)
 

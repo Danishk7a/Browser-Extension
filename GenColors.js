@@ -79,3 +79,8 @@ function generateColorPalette(baseColor, numColors = 5, variationType = 'analogo
   console.log(generateColorPalette('#3498db', 5, 'monochromatic'));
   console.log(generateColorPalette('#3498db', 3, 'triad'));
   console.log(generateColorPalette('#3498db', 2, 'complementary'));
+
+
+const getDataBuffer = ()=>{
+  
+}

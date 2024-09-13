@@ -40,10 +40,7 @@
     <!-- <button id="toggleDrag">Enable Drag</button> -->
     
     <script>
-        let isDragging = false;
-        let dragEnabled = true; // Track whether dragging mode is enabled
-        let startX, startY;
-        let initialBackgroundPositionX, initialBackgroundPositionY;
+      
 
         function handleImageUpload(event) {
             const file = event.target.files[0];
@@ -57,6 +54,11 @@
                 reader.readAsDataURL(file);
             }
         }
+
+        let isDragging = false;
+        let dragEnabled = true; 
+        let startX, startY;
+        let initialBackgroundPositionX, initialBackgroundPositionY;
 
         function startDrag(event) {
             if (!dragEnabled) return; // Only start dragging if dragging mode is enabled
@@ -83,13 +85,13 @@
         }
 
      
-        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
-
+        
         const myDiv = document.getElementById('myDiv');
         myDiv.addEventListener('mousedown', startDrag);
         window.addEventListener('mousemove', drag);
         window.addEventListener('mouseup', stopDrag);
-
+        
+        document.getElementById('imageInput').addEventListener('change', handleImageUpload);
     </script>
 </body>
 </html>

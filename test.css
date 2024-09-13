@@ -1,0 +1,15 @@
+body{
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #171717;
+    color: white;
+
+}
+
+#example{
+    height: 50vh;
+    width: 500px;
+    background-color: brown;
+}

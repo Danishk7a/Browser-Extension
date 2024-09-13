@@ -78,7 +78,7 @@ function updateSelection() {
     // Remove selection from all items
     const items = injectedDiv.querySelectorAll('div');
     items.forEach(item => {
-        item.style.border = '1px solid transparent'; 
+        // item.style.border = '1px solid transparent'; 
         item.style.scale = 1; 
         item.style.marginBottom = '2px'; 
         // item.innerText =; 
@@ -88,7 +88,7 @@ function updateSelection() {
     // Add selection to the current item
     const selectedItem = items[currentIndex];
     if (selectedItem) {
-        selectedItem.style.border = '2px solid black'; 
+        selectedItem.style.outline = '2px solid black'; 
         selectedItem.style.scale = 1.3; 
         // selectedItem.innerText = 'Copied' 
         selectedItem.style.marginBottom = '2px'; 
@@ -128,10 +128,10 @@ document.addEventListener('keydown', (event) => {
     }
 
 
-        if(event.key === 'z'){
+        if( event.altKey && event.key === 'z'){
             pick();
         }
-        if(event.key === 'x'){
+        if(event.altKey && event.key === 'x'){
             items.length = 0
         }
     
@@ -239,49 +239,11 @@ function injectEditMode() {
     // style.classList.add('resizable')
     style.textContent = `
       .extension-selected-outline {
-        outline: 2px solid #0066ff;
-        outline-offset: -2px;
+        border: 2px solid #0066ff;
+ 
       }
-      .extension-menu-trigger {
-        position: absolute;
-        top: -15px;
-        left: -15px;
-        width: 15px;
-        height: 15px;
-        background-color: #007bff;
-        border-radius: 50%;
-        cursor: pointer;
-        z-index: 10001;
-      }
-      #extension-sidemenu {
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        width: 250px;
-        background: white;
-        border: 1px solid #ccc;
-        padding: 10px;
-        z-index: 10000;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      }
-      #extension-sidemenu input, #extension-sidemenu select {
-        width: 100%;
-        margin-bottom: 5px;
-      }
-      #extension-toggle-button {
-        position: fixed;
-        top: 10px;
-        left: 10px;
-        z-index: 10001;
-        padding: 5px 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        cursor: pointer;
-      }
-      .extension-ui {
-        pointer-events: auto !important;
-      }
+     
+      
     `;
     document.head.appendChild(style);
 
@@ -373,9 +335,10 @@ selectedElement.addEventListener('drop', (event) => {
       if (event.target.closest('#extension-sidemenu')) {
         return;
       }
-      event.target.style.border = '2px solid black'
+      event.target.style.outline = '2px solid black'
+    
       event.target.addEventListener('mouseenter', ()=>{
-        event.target.parentNode.style.border = 'none'
+        event.target.parentNode.style.outline = 'none'
        })
 
     }
@@ -384,158 +347,34 @@ selectedElement.addEventListener('drop', (event) => {
       if (event.target.closest('#extension-sidemenu')) {
         return;
       }
-       event.target.style.border = 'none'
+       event.target.style.outline = 'none'
+             event.target.parentNode.style.outline = '2px solid black'
  }
 
 
     function addEditUI(element) {
      
       element.classList.add('extension-selected-outline');
-      // element.classList.add('resizable')
-      element.style.position = 'relative';
+      
 
 
-      if (element.textContent.trim() !== '') {
-        element.addEventListener('dblclick', () => {
-          element.contentEditable = 'true'; 
-          element.focus();
-        });
-      }
+      // if (element.textContent.trim() !== '') {
+      //   element.addEventListener('dblclick', () => {
+      //     element.contentEditable = 'true'; 
+      //     element.focus();
+      //   });
+      // }
     
-       
-      const menuTrigger = document.createElement('div');
-      menuTrigger.className = 'extension-menu-trigger';
-      disableDefaults();
-
-      const handle = document.createElement('div');  
-      element.appendChild(menuTrigger);
-
-      menuTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-      });
-
-        makeResizableAndDraggable(element, handle);
 
     }
 
     function removeEditUI(element) {
       element.classList.remove('extension-selected-outline');
-      element.classList.remove('resizable');
-      element.querySelectorAll('.extension-menu-trigger').forEach(el => el.remove());
-      const handle = element.querySelector('#handle');
-      if (handle) handle.remove();
-      
-      // Remove event listeners
-      element.removeEventListener('mousedown', element.startDragging);
-      if (element.resizeHandle) {
-        element.resizeHandle.removeEventListener('mousedown', element.startResizing);
-      }
+  
     }
 
     
-    function makeResizableAndDraggable(element, handle) {
-   
-      
 
-      let isDragging = false;
-      let isResizing = false;
-      let startX, startY, startWidth, startHeight, startLeft, startTop, startFontSize ;
-    
-      // Function to start dragging
-      function startDragging(e) {
-        if (isResizing) return;
-        isDragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startLeft = parseInt(window.getComputedStyle(element).left, 10) || 0;
-        startTop = parseInt(window.getComputedStyle(element).top, 10) || 0;
-        document.addEventListener('mousemove', onDragMove);
-        document.addEventListener('mouseup', stopDragging);
-      }
-    
-      // Function to handle dragging
-      function onDragMove(e) {
-        if (!isDragging) return;
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        element.style.left = `${startLeft + deltaX}px`;
-        element.style.top = `${startTop + deltaY}px`;
-      }
-    
-      // Function to stop dragging
-      function stopDragging() {
-        isDragging = false;
-        document.removeEventListener('mousemove', onDragMove);
-        document.removeEventListener('mouseup', stopDragging);
-      }
-    
-      // Function to start resizing
-      function startResizing(e) {
-        if (isDragging) return;
-        e.preventDefault();
-        isResizing = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        startWidth = parseInt(window.getComputedStyle(element).width, 10);
-        startHeight = parseInt(window.getComputedStyle(element).height, 10);
-        
-      startFontSize =  parseInt(window.getComputedStyle(element).fontSize, 10);
-        document.addEventListener('mousemove', onResizeMove);
-        document.addEventListener('mouseup', stopResizing);
-
-      }
-    
-      // Function to handle resizing
-      function onResizeMove(e) {
-        if (!isResizing) return;
-        const deltaX = e.clientX - startX;
-        const deltaY = e.clientY - startY;
-        
-        const newWidth = startWidth + deltaX;
-        const newHeight = startHeight + deltaY;
-        
-        element.style.width = `${newWidth}px`;
-        element.style.height = `${newHeight}px`;
-
-       
-        
-      // const diff = deltaX + deltaY
-    
-     const newFontSize = startFontSize + deltaX
-
-
-     element.style.fontSize = `${newFontSize}px`
-
-   
-
-
-        
-        // const images = element.getElementsByTagName('img');
-        // for (let img of images) {
-        //   img.style.width = `${newWidth}px`;
-        //   img.style.height = `${newHeight}px`;
-        //   // img.style.objectFit = 'cover';
-        // }
-
-
-      }
-    
-      // Function to stop resizing
-      function stopResizing() {
-        isResizing = false;
-        document.removeEventListener('mousemove', onResizeMove);
-        document.removeEventListener('mouseup', stopResizing);
-      }
-    
-      // Attach event listeners
-      element.addEventListener('mousedown', startDragging);
-      handle.addEventListener('mousedown', startResizing);
-
-      element.startDragging = startDragging;
-      element.startResizing = startResizing;
-      element.resizeHandle = handle;
-
-    }
 
     function handleKeyDown(event) {
       if (!selectedElement) return;
@@ -873,91 +712,59 @@ document.body.style.backgroundColor = '#ffffff'
 
 
 
-function sendStyle(selectedElement) {
+function sendStyle(element) {
   // Check if the selected element is valid
-  if (!selectedElement) {
+  if (!element) {
       console.error('No element provided');
       return null;
   }
 
-  const element = selectedElement;
-  const computedStyle = window.getComputedStyle(element);
+    const styles = {};
 
-  // Extract properties as pixel values
-  const heightPx = parseFloat(computedStyle.height);
-  const widthPx = parseFloat(computedStyle.width);
-  const paddingTopPx = parseFloat(computedStyle.paddingTop);
-  const paddingRightPx = parseFloat(computedStyle.paddingRight);
-  const paddingBottomPx = parseFloat(computedStyle.paddingBottom);
-  const paddingLeftPx = parseFloat(computedStyle.paddingLeft);
-  const marginTopPx = parseFloat(computedStyle.marginTop);
-  const marginRightPx = parseFloat(computedStyle.marginRight);
-  const marginBottomPx = parseFloat(computedStyle.marginBottom);
-  const marginLeftPx = parseFloat(computedStyle.marginLeft);
+    // Get inline styles
+    const inlineStyles = element.style;
+    for (let i = 0; i < inlineStyles.length; i++) {
+        const property = inlineStyles[i];
+        styles[property] = inlineStyles.getPropertyValue(property);
+    }
 
-  // Convert px to percentage if needed (relative to parent or viewport)
-  const parentWidthPx = element.parentElement ? element.parentElement.clientWidth : window.innerWidth;
-  const parentHeightPx = element.parentElement ? element.parentElement.clientHeight : window.innerHeight;
+    // Get styles from <style> tags and external stylesheets
+    const styleSheets = document.styleSheets;
+    for (let i = 0; i < styleSheets.length; i++) {
+        try {
+            const rules = styleSheets[i].cssRules;
+            if (rules) {
+                for (let j = 0; j < rules.length; j++) {
+                    const rule = rules[j];
+                    // Check if the rule applies to the element
+                    if (rule.selectorText && element.matches(rule.selectorText)) {
+                        const style = rule.style;
+                        for (let k = 0; k < style.length; k++) {
+                            const property = style[k];
+                            styles[property] = style.getPropertyValue(property);
+                        }
+                    }
+                }
+            }
+        } catch (e) {
+            // Some stylesheets may be cross-origin and cannot be accessed
+            console.warn('Cannot access stylesheet:', e);
+        }
+    }
 
-  const heightPercent = (heightPx / parentHeightPx) * 100;
-  const widthPercent = (widthPx / parentWidthPx) * 100;
-  const paddingTopPercent = (paddingTopPx / parentHeightPx) * 100;
-  const paddingRightPercent = (paddingRightPx / parentWidthPx) * 100;
-  const paddingBottomPercent = (paddingBottomPx / parentHeightPx) * 100;
-  const paddingLeftPercent = (paddingLeftPx / parentWidthPx) * 100;
-  const marginTopPercent = (marginTopPx / parentHeightPx) * 100;
-  const marginRightPercent = (marginRightPx / parentWidthPx) * 100;
-  const marginBottomPercent = (marginBottomPx / parentHeightPx) * 100;
-  const marginLeftPercent = (marginLeftPx / parentWidthPx) * 100;
+    return styles;
 
-  // Return an object with the values
-  return {
-      height: {
-          px: heightPx,
-          percent: heightPercent
-      },
-      width: {
-          px: widthPx,
-          percent: widthPercent
-      },
-      padding: {
-          top: {
-              px: paddingTopPx,
-              percent: paddingTopPercent
-          },
-          right: {
-              px: paddingRightPx,
-              percent: paddingRightPercent
-          },
-          bottom: {
-              px: paddingBottomPx,
-              percent: paddingBottomPercent
-          },
-          left: {
-              px: paddingLeftPx,
-              percent: paddingLeftPercent
-          }
-      },
-      margin: {
-          top: {
-              px: marginTopPx,
-              percent: marginTopPercent
-          },
-          right: {
-              px: marginRightPx,
-              percent: marginRightPercent
-          },
-          bottom: {
-              px: marginBottomPx,
-              percent: marginBottomPercent
-          },
-          left: {
-              px: marginLeftPx,
-              percent: marginLeftPercent
-          }
-      }
-  };
+
+
+
 }
+
+
+// const element = document.querySelector('#myElement'); // Replace with your element selector
+// const explicitStyles = getAllExplicitStyles(element);
+// console.log(explicitStyles);
+ 
+     
 
 
 
@@ -1121,3 +928,22 @@ function removeEventListeners() {
   window.removeEventListener('mousemove', drag);
   window.removeEventListener('mouseup', stopDrag);
 }
+
+
+
+// document.addEventListener('DOMContentLoaded', () => {
+//   const editableArea = selectedElement
+
+//   // Handle Ctrl + A to select all text
+//   editableArea.addEventListener('keydown', (event) => {
+//       if (event.ctrlKey && event.key === 'a') {
+//           event.preventDefault();
+//           editableArea.select();
+//       }
+//   });
+
+//   // Handle double-click to select all text
+//   editableArea.addEventListener('dblclick', () => {
+//       editableArea.select();
+//   });
+// });
