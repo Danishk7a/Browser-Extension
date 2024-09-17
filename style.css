@@ -104,7 +104,7 @@ input:checked + .slider:before {
     transform: translateX(26px);
 }
 #Responsive{
-display: none;
+display: flex;
 gap: 20px;
 align-items: center;
 position: absolute;
@@ -123,7 +123,7 @@ button{
   padding: 9px;
   border-radius:7px ;
   background-color: #242424;
-  width: 120px;
+  width: 160px;
   cursor: pointer;
   font-size: 11px;
   transition: 0.3s ease-in;
@@ -241,10 +241,11 @@ i{
   /* background: linear-gradient(to right, #a8f79d, #79bfd9,  #ed89c8, #bf8aee, #e2c1ae ); */
   height: 60vh;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   padding: 0;
 
+  /* gap: 10px; */
   width: 100%;
 }
 

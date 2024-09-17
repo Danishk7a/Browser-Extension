@@ -5,6 +5,31 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
+let checkBtn = 0;
+
+document.getElementById('applyPalatte').addEventListener('change', function() {
+  // console.log("VALUE : ", document.getElementById('applyPalatte').value)
+  
+  if (this.checked) {
+      console.log('Checkbox is checked');
+      checkBtn = 1;
+      chrome.storage.local.set({checkBtn: 1}, () => {
+        console.log("Global variable saved.");
+      });
+
+  } else {
+      console.log('Checkbox is unchecked');
+      chrome.storage.local.set({checkBtn: 0}, () => {
+        console.log("Global variable saved.");
+      });
+  
+    }
+});
+
+chrome.storage.local.set({checkBtn: checkBtn}, () => {
+  console.log("Global variable saved.");
+});
+
 
 
 document.getElementById('changeTheme').addEventListener('click', () => {
@@ -18,6 +43,101 @@ document.getElementById('changeTheme').addEventListener('click', () => {
 
 
 });
+
+
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  // console.log("FYIS IS OOO : " ,  message.colors);
+
+  function displayColorMappings(mappings) {
+    // Convert the mappings object to an array of entries (key-value pairs)
+    const entries = Object.entries(mappings);
+  
+    // Get the last 5 entries
+    const lastFiveEntries = entries.slice(-5);
+  
+    // Clear the previous entries in the 'Extension_Logo' container
+    const container = document.getElementById('Extension_Logo');
+    container.innerHTML = ''; // Clears existing content
+  
+    // <i class="fa-solid fa-lock"></i>
+  
+    // Iterate over the last 5 entries and create divs
+    for (const [rgb, hex] of lastFiveEntries) {
+      const div = document.createElement('div');
+      div.style.height = '80%';
+      div.style.width = '200px';
+      div.style.borderRadius = '';
+      div.style.backgroundColor = hex;
+      div.style.display = 'flex'
+      div.style.flexDirection = 'column'
+      div.style.gap = '20px'
+      div.style.alignItems = 'center'
+      div.style.justifyContent = 'center'
+
+      div.addEventListener('mouseover', () => {
+        openLock.style.display = 'block'; 
+        closedLock.style.display = 'block'; 
+        copyBtn.style.display = 'block'; 
+    });
+
+    div.addEventListener('mouseout', () => {
+      openLock.style.display = 'none'; 
+      closedLock.style.display = 'none'; 
+      copyBtn.style.display = 'none'; 
+    });
+
+
+    
+
+      const openLock = document.createElement('i');
+      openLock.className = 'fa-solid fa-lock-open';
+      openLock.style.display = 'none'
+      div.appendChild(openLock);
+
+      const closedLock = document.createElement('i');
+      closedLock.className = "fa-solid fa-lock";
+      closedLock.style.display = 'none'
+      div.appendChild(closedLock);
+
+      const copyBtn = document.createElement('i');
+      copyBtn.className = "fa-regular fa-copy";
+      copyBtn.style.display = 'none'
+      div.appendChild(copyBtn);
+
+      copyBtn.addEventListener('click', ()=>{
+        navigator.clipboard.writeText(hex).then(() => {
+          
+      }).catch(err => {
+          console.error('Failed to copy color:', err);
+      });
+
+      })
+
+      
+
+
+      const colorCode = document.createElement('div');
+      colorCode.innerText = hex;
+      colorCode.fontSize = '13px'
+      div.appendChild(colorCode)
+
+
+
+  
+      container.appendChild(div);
+    }
+  }
+  
+
+displayColorMappings(message.colors)
+
+  
+  
+
+
+});
+
 
 
 
@@ -49,6 +169,7 @@ async function changeTheme() {
     }else{
             
         let bgColor = getComputedStyle(el).backgroundColor;
+        let color = getComputedStyle(el).color;
         let bgImage = getComputedStyle(el).backgroundImage;
   
         // Check if the element has a gradient or a solid color
@@ -58,18 +179,103 @@ async function changeTheme() {
         } else if (bgColor && bgColor !== 'rgba(0, 0, 0, 0)' && bgColor !== 'transparent') {
             // Check if the background color is explicitly set
             if (colorMap[bgColor]) {
-                el.style.backgroundColor = colorMap[bgColor];
-            } else {
-                // Use the next color from the color palette
+
+
+
+              chrome.storage.local.get('checkBtn', (result) => {
+                const checkbtn = result.checkBtn;
+                
+                if(checkbtn){
+                  el.style.backgroundColor = colorMap[bgColor];
+                    // Check if the color is white
+                      
+        let color = getComputedStyle(el).color;
+
+        // Function to check if the color is white
+        function isWhite(color) {
+            // RGB color values for white are 255, 255, 255
+            return color === 'rgb(255, 255, 255)';
+        }
+
+        // Check if the color is white
+        if (isWhite(color)) {
+            // Change the color to black
+            el.style.color = 'black';
+        } else {
+            // Change the color to white
+            el.style.color = 'white';
+        }
+                 
+
+
+                }
+                
+
+
+            });
+          
+      
+    
+          
+          
+              } else {
+                
                 let newColor = colorPalette[colorIndex % colorPalette.length];
                 colorMap[bgColor] = newColor;
-                el.style.backgroundColor = newColor;
-                colorIndex++; // Move to the next color in the palette
+               
+               
+                chrome.storage.local.get('checkBtn', (result) => {
+                  const checkbtn = result.checkBtn;
+                  
+                  if(checkbtn){
+                    el.style.backgroundColor = newColor;
+                      
+        let color = getComputedStyle(el).color;
+
+        // Function to check if the color is white
+        function isWhite(color) {
+            // RGB color values for white are 255, 255, 255
+            return color === 'rgb(255, 255, 255)';
+        }
+
+        // Check if the color is white
+        if (isWhite(color)) {
+            // Change the color to black
+            el.style.color = 'black';
+        } else {
+            // Change the color to white
+            el.style.color = 'white';
+        }
+                  
+                  }
+                  
+  
+  
+              });
+                
+      
+              
+              
+                colorIndex++; 
             }
         }
+
+
+
+        
+
+
+
+
+
+
     }
 
     });
+
+
+  chrome.runtime.sendMessage({colors: colorMap});
+
   }
 
 
@@ -91,14 +297,14 @@ document.addEventListener('keydown', (event) => {
   }
 });
 
-document.getElementById('FontColors').addEventListener('click', () => {
-    chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-        chrome.scripting.executeScript({
-            target: {tabId: tabs[0].id},
-            function: fontColorChange
-        });
-    });
-  });
+// document.getElementById('FontColors').addEventListener('click', () => {
+//     chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+//         chrome.scripting.executeScript({
+//             target: {tabId: tabs[0].id},
+//             function: fontColorChange
+//         });
+//     });
+//   });
   function fontColorChange() {
     // Get all elements on the page
     let elements = document.querySelectorAll('*');
@@ -166,57 +372,57 @@ document.getElementById('FontColors').addEventListener('click', () => {
 
 
 // ==========================================Font Family =============================================================================
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'm') {
-  document.getElementById('ChangeFontfamily').click()
-  }
-});
+// document.addEventListener('keydown', (event) => {
+//   if (event.key === 'm') {
+//   document.getElementById('ChangeFontfamily').click()
+//   }
+// });
 
 
 
 
 
-document.getElementById('ChangeFontfamily').addEventListener('click', () => {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        const tabId = tabs[0].id;
+// document.getElementById('ChangeFontfamily').addEventListener('click', () => {
+//     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+//         const tabId = tabs[0].id;
 
-        chrome.scripting.executeScript({
-            target: { tabId: tabId },
-            func: FontFamilyFn,
-            args: [fonts]
-        }).then(() => {
-            console.log('Script executed successfully');
-        }).catch((error) => {
-            console.error('Script execution failed:', error);
-        });
-    });
-});
+//         chrome.scripting.executeScript({
+//             target: { tabId: tabId },
+//             func: FontFamilyFn,
+//             args: [fonts]
+//         }).then(() => {
+//             console.log('Script executed successfully');
+//         }).catch((error) => {
+//             console.error('Script execution failed:', error);
+//         });
+//     });
+// });
 
-const fonts = [
-    'Courier', 'monospace', 'Segoe UI', 'Helvetica', 'Arial', 'Roboto',
-    'Verdana', 'sans-serif', 'Times New Roman', 'Cambria', 'Cochin', 'Simpsonfont','VITAMINO','Youaretheone'
-];
+// const fonts = [
+//     'Courier', 'monospace', 'Segoe UI', 'Helvetica', 'Arial', 'Roboto',
+//     'Verdana', 'sans-serif', 'Times New Roman', 'Cambria', 'Cochin', 'Simpsonfont','VITAMINO','Youaretheone'
+// ];
 
 
 
-function FontFamilyFn(fonts) {
+// function FontFamilyFn(fonts) {
 
 
   
   
-const elements = document.querySelectorAll('*');
+// const elements = document.querySelectorAll('*');
 
 
  
       
-    let index = Math.floor(Math.random() * fonts.length);
-    let selectedFont = fonts[index];
+//     let index = Math.floor(Math.random() * fonts.length);
+//     let selectedFont = fonts[index];
 
-    document.getElementById('Display')     
-     elements.forEach(el => {
-      el.style.fontFamily = selectedFont;
+//     document.getElementById('Display')     
+//      elements.forEach(el => {
+//       el.style.fontFamily = selectedFont;
      
-});
+// });
 
 
 
@@ -225,7 +431,7 @@ const elements = document.querySelectorAll('*');
 
 
 
-}
+// }
 
 // ==========================================Font Family =============================================================================
 
@@ -1206,16 +1412,6 @@ console.log("EX Style : ",explicitStyles);
 
 
 
-// -----------------------------------------------------open builder--------------------------------
-document.getElementById('openbuilder').addEventListener('click', () => {
-  chrome.tabs.create({ url: 'http://localhost:5173' });
-});
-// -----------------------------------------------------open builder=-----------------------------
-
-
-
-
-
 
 
 
@@ -1266,36 +1462,6 @@ angleInput.addEventListener('input', updateGradient);
 
 
 
-// ---------------------------------------------------------disable default -----------------------------------------------------
-
-// popup.js
-
-function disableDefaults() {
-  const images = document.getElementsByTagName('img');
-  for (let img of images) {
-    img.addEventListener('mousedown', function(e) {
-      e.preventDefault();
-    });
-    
-    img.addEventListener('dragstart', function(e) {
-      e.preventDefault();
-    });
-  }
-  console.log('Image dragging disabled');
-}
-
-document.addEventListener('DOMContentLoaded', () => {
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.tabs.executeScript(
-      tabs[0].id,
-      {code: '(' + disableDefaults.toString() + ')();'}
-    );
-  });
-});
-
-
-
-// ---------------------------------------------------------disable default -----------------------------------------------------
 
 
 
@@ -1312,34 +1478,27 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
+// document.addEventListener('DOMContentLoaded', () => {
+
+//   document.getElementById('home-nav').click();
+
+// })
 
 
+// // Click event for the "color-nav" element
+// document.getElementById('color-nav').addEventListener('click', () => {
+//   const outlet = document.getElementById('outlet');
+//   outlet.innerHTML = '';
+//   const colorsPage = document.getElementById('colorsPage').style.display = 'flex';
+
+//    document.getElementById('viewPage').style.display = 'none'
+//    document.getElementById('Responsive').style.display = 'none';
 
 
-
-
-
-document.addEventListener('DOMContentLoaded', () => {
-
-  document.getElementById('home-nav').click();
-
-})
-
-
-// Click event for the "color-nav" element
-document.getElementById('color-nav').addEventListener('click', () => {
-  const outlet = document.getElementById('outlet');
-  outlet.innerHTML = '';
-  const colorsPage = document.getElementById('colorsPage').style.display = 'flex';
-
-   document.getElementById('viewPage').style.display = 'none'
-   document.getElementById('Responsive').style.display = 'none';
-
-
-  //  document.getElementById('Extension_Logo').style = '';
-   const displayTheme = document.getElementById('displayimg')
-   document.getElementById('Extension_Logo').style.background = 'linear-gradient(45deg, red, blue)' ;
-   displayTheme.style.opacity = '0%'
+//   //  document.getElementById('Extension_Logo').style = '';
+//    const displayTheme = document.getElementById('displayimg')
+//    document.getElementById('Extension_Logo').style.background = 'linear-gradient(45deg, red, blue)' ;
+//    displayTheme.style.opacity = '0%'
 
 
 
@@ -1348,200 +1507,97 @@ document.getElementById('color-nav').addEventListener('click', () => {
 
 
 
-   const navLink2 = document.getElementById('color-nav');
-   navLink.style.textDecoration = 'underline #0AB76E'
-   navLink.style.textUnderlineOffset = '8px'
+//    const navLink2 = document.getElementById('color-nav');
+//    navLink.style.textDecoration = 'underline #0AB76E'
+//    navLink.style.textUnderlineOffset = '8px'
 
 
-const navLink = document.getElementById('home-nav');
-navLink.style.textDecoration = 'none'
-navLink.style.textUnderlineOffset = 'none'
+// const navLink = document.getElementById('home-nav');
+// navLink.style.textDecoration = 'none'
+// navLink.style.textUnderlineOffset = 'none'
 
 
-const navLink3 = document.getElementById('view-nav');
-navLink.style.textDecoration = 'none'
-navLink.style.textUnderlineOffset = 'none'
+// const navLink3 = document.getElementById('view-nav');
+// navLink.style.textDecoration = 'none'
+// navLink.style.textUnderlineOffset = 'none'
 
   
 
-  outlet.appendChild(colorsPage);
-});
+//   outlet.appendChild(colorsPage);
+// });
 
 
 
 
-// Click event for the "home-nav" element
-document.getElementById('home-nav').addEventListener('click', () => {
-  const outlet = document.getElementById('outlet');
-  outlet.innerHTML = ''; // Clear the current content
-  const homePage = document.getElementById('Responsive').style.display = 'flex';
+// // Click event for the "home-nav" element
+// document.getElementById('home-nav').addEventListener('click', () => {
+//   const outlet = document.getElementById('outlet');
+//   outlet.innerHTML = ''; // Clear the current content
+//   const homePage = document.getElementById('Responsive').style.display = 'flex';
   
   
-  // Hide other pages
-  document.getElementById('colorsPage').style.display = 'none';
-  document.getElementById('viewPage').style.display = 'none'
+//   // Hide other pages
+//   document.getElementById('colorsPage').style.display = 'none';
+//   document.getElementById('viewPage').style.display = 'none'
 
 
-     const displayTheme = document.getElementById('displayimg')
-   displayTheme.style.opacity = '100%'
+//      const displayTheme = document.getElementById('displayimg')
+//    displayTheme.style.opacity = '100%'
 
-  const navLink = document.getElementById('home-nav');
-  navLink.style.textDecoration = 'underline #0AB76E'
-  navLink.style.textUnderlineOffset = '8px'
+//   const navLink = document.getElementById('home-nav');
+//   navLink.style.textDecoration = 'underline #0AB76E'
+//   navLink.style.textUnderlineOffset = '8px'
   
-  const navLink2 = document.getElementById('color-nav');
-  navLink.style.textDecoration = 'none'
-  navLink.style.textUnderlineOffset = 'none'
+//   const navLink2 = document.getElementById('color-nav');
+//   navLink.style.textDecoration = 'none'
+//   navLink.style.textUnderlineOffset = 'none'
   
-  const navLink3 = document.getElementById('view-nav');
-  navLink.style.textDecoration = 'none'
-  navLink.style.textUnderlineOffset = 'none'
+//   const navLink3 = document.getElementById('view-nav');
+//   navLink.style.textDecoration = 'none'
+//   navLink.style.textUnderlineOffset = 'none'
   
-  
-
-  outlet.appendChild(homePage);
-
-
-
-
-
-
-});
-
-
-
-
-// Click event for the "view-nav" element
-document.getElementById('view-nav').addEventListener('click', () => {
-  const outlet = document.getElementById('outlet');
-  outlet.innerHTML = ''; 
-  const viewPage = document.getElementById('viewPage').style.display = 'flex';
-  
-  // Hide other pages
-  document.getElementById('colorsPage').style.display = 'none';
-  document.getElementById('Responsive').style.display = 'none';
   
 
-  const navLink = document.getElementById('home-nav');
-  navLink.style.textDecoration = 'none'
-  navLink.style.textUnderlineOffset = 'none'
+//   outlet.appendChild(homePage);
+
+
+
+
+
+
+// });
+
+
+
+
+// // Click event for the "view-nav" element
+// document.getElementById('view-nav').addEventListener('click', () => {
+//   const outlet = document.getElementById('outlet');
+//   outlet.innerHTML = ''; 
+//   const viewPage = document.getElementById('viewPage').style.display = 'flex';
   
-  const navLink2 = document.getElementById('color-nav');
-  navLink.style.textDecoration = 'none'
-  navLink.style.textUnderlineOffset = 'none'
-  
-  const navLink3 = document.getElementById('view-nav');
-  navLink.style.textDecoration = 'underline #0AB76E'
-  navLink.style.textUnderlineOffset = '8px'
-  
-  // Show the viewPage
-
-  outlet.appendChild(viewPage);
-});
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// -------------------------------------------------------------Mobile Responsive -------------------------------------------
-
-document.getElementById('MobileView').addEventListener('click', ()=>{
-  chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
-    chrome.scripting.executeScript({
-        target: {tabId: tabs[0].id},
-        function: MobileView
-    });
-});
-
-
-
-})
-
-
-
-function MobileView() {
-  // Check if the simulator already exists
-  if (document.getElementById('mobile-view-simulator')) {
-      return;
-  }
-
-  // Create the simulator container
-  const simulator = document.createElement('div');
-  simulator.id = 'mobile-view-simulator';
-  simulator.style.position = 'fixed';
-
-  simulator.style.zIndex = '9999';
-  simulator.style.backgroundColor = 'transparent';
-
-  // simulator.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
-  // simulator.style.borderRadius = '40px'
-
-
-  simulator.style.top = '0';
-  simulator.style.left = '0';
-  simulator.style.width = '100vw';
-  simulator.style.height = '100vh';
-  simulator.style.display = 'flex';
-  simulator.style.justifyContent = 'center';
-  simulator.style.alignItems = 'center';
-  simulator.style.padding = '20px';
+//   // Hide other pages
+//   document.getElementById('colorsPage').style.display = 'none';
+//   document.getElementById('Responsive').style.display = 'none';
   
 
+//   const navLink = document.getElementById('home-nav');
+//   navLink.style.textDecoration = 'none'
+//   navLink.style.textUnderlineOffset = 'none'
+  
+//   const navLink2 = document.getElementById('color-nav');
+//   navLink.style.textDecoration = 'none'
+//   navLink.style.textUnderlineOffset = 'none'
+  
+//   const navLink3 = document.getElementById('view-nav');
+//   navLink.style.textDecoration = 'underline #0AB76E'
+//   navLink.style.textUnderlineOffset = '8px'
+  
+//   // Show the viewPage
 
-  // Create the phone frame
-  const phoneFrame = document.createElement('div');
-  phoneFrame.style.width = '375px'; // iPhone X width
-  phoneFrame.style.height = '90vh';
-  phoneFrame.style.backgroundColor = '#000';
-  phoneFrame.style.borderRadius = '40px';
-  phoneFrame.style.padding = '20px';
-  phoneFrame.style.boxSizing = 'border-box';
-
-  // Create the screen area
-  const screen = document.createElement('div');
-  screen.style.width = '100%';
-  screen.style.height = '100%';
-  screen.style.backgroundColor = '#fff';
-  screen.style.borderRadius = '30px';
-  screen.style.overflow = 'hidden';
-
-  // Create the iframe to load the current page
-  const iframe = document.createElement('iframe');
-  iframe.style.width = '100%';
-  iframe.style.height = '100%';
-  iframe.style.border = 'none';
-  iframe.src = window.location.href;
-
-  // Assemble the components
-  screen.appendChild(iframe);
-  phoneFrame.appendChild(screen);
-  simulator.appendChild(phoneFrame);
-
-  // Create close button
+//   // outlet.appendChild(viewPage);
+// });
 
 
-  // Add the simulator to the page
-  document.body.innerHTML = ''
-  document.body.appendChild(simulator);
-}
 
 
-// -------------------------------------------------------------Mobile Responsive -------------------------------------------
