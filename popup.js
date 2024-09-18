@@ -55,6 +55,8 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   
     // Get the last 5 entries
     const lastFiveEntries = entries.slice(-5);
+
+    
   
     // Clear the previous entries in the 'Extension_Logo' container
     const container = document.getElementById('Extension_Logo');
@@ -65,62 +67,82 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     // Iterate over the last 5 entries and create divs
     for (const [rgb, hex] of lastFiveEntries) {
       const div = document.createElement('div');
-      div.style.height = '80%';
-      div.style.width = '200px';
+      div.style.height = '70%';
+      div.style.width = '100%';
       div.style.borderRadius = '';
       div.style.backgroundColor = hex;
       div.style.display = 'flex'
       div.style.flexDirection = 'column'
-      div.style.gap = '20px'
+      div.style.gap = '30px'
       div.style.alignItems = 'center'
       div.style.justifyContent = 'center'
 
       div.addEventListener('mouseover', () => {
-        openLock.style.display = 'block'; 
-        closedLock.style.display = 'block'; 
+        lock.style.display = 'block'; 
         copyBtn.style.display = 'block'; 
     });
 
     div.addEventListener('mouseout', () => {
-      openLock.style.display = 'none'; 
-      closedLock.style.display = 'none'; 
+      lock.style.display = 'none'; 
       copyBtn.style.display = 'none'; 
     });
+
+    const copyBtn = document.createElement('i');
+    copyBtn.className = "fa-regular fa-copy hovericons";
+    copyBtn.style.display = 'none'
+    div.appendChild(copyBtn);
+
+    copyBtn.addEventListener('click', ()=>{
+      navigator.clipboard.writeText(hex).then(() => {
+        
+    }).catch(err => {
+        console.error('Failed to copy color:', err);
+    });
+
+    })
 
 
     
 
-      const openLock = document.createElement('i');
-      openLock.className = 'fa-solid fa-lock-open';
-      openLock.style.display = 'none'
-      div.appendChild(openLock);
+    const lock = document.createElement('i');
+    lock.className = 'fa-solid fa-lock-open hovericons';
+    lock.style.display = 'none';
+    div.appendChild(lock);
+    
+    lock.addEventListener('click', () => {
+      // Toggle class names correctly
+      if (lock.classList.contains('fa-lock-open')) {
+        lock.classList.remove('fa-lock-open');
+        lock.classList.add('fa-lock');
+      } else {
+        lock.classList.remove('fa-lock');
+        lock.classList.add('fa-lock-open');
+      }
+    });
 
-      const closedLock = document.createElement('i');
-      closedLock.className = "fa-solid fa-lock";
-      closedLock.style.display = 'none'
-      div.appendChild(closedLock);
-
-      const copyBtn = document.createElement('i');
-      copyBtn.className = "fa-regular fa-copy";
-      copyBtn.style.display = 'none'
-      div.appendChild(copyBtn);
-
-      copyBtn.addEventListener('click', ()=>{
-        navigator.clipboard.writeText(hex).then(() => {
-          
-      }).catch(err => {
-          console.error('Failed to copy color:', err);
-      });
-
-      })
-
-      
 
 
       const colorCode = document.createElement('div');
       colorCode.innerText = hex;
+      colorCode.className = 'hovericons'
       colorCode.fontSize = '13px'
       div.appendChild(colorCode)
+
+      colorCode.addEventListener('click', ()=>{
+       const customColorPicker =  document.getElementById('customColorPicker')
+       customColorPicker.style.display = 'flex';
+
+    
+
+
+       container.appendChild(customColorPicker)
+
+
+
+      })
+
+
+      
 
 
 
@@ -138,8 +160,13 @@ displayColorMappings(message.colors)
 
 });
 
+const customColorPicker =  document.getElementById('customColorPicker')
+
+customColorPicker.addEventListener('click', ()=>{
+  customColorPicker.style.display = 'none';
 
 
+ })
 
 async function changeTheme() {
     let indexx = Math.floor(Math.random() * 100);
@@ -276,9 +303,29 @@ async function changeTheme() {
 
   chrome.runtime.sendMessage({colors: colorMap});
 
+
+  const entries = Object.entries(colorMap);
+  
+  const lastFiveEntries = entries.slice(-5);
+  let arr = []
+  for (const [rgb, hex] of lastFiveEntries) {
+    
+    console.log(`%c REDESIGN!','background: ${hex};`);
+  
+    arr.push(hex);
+   
+    
+
+
+  }
+  console.log(arr)
+  colors = arr;
+ 
+
   }
 
 
+  
 // ==========================================Theme Colors =============================================================================
 
 
@@ -362,7 +409,163 @@ document.addEventListener('keydown', (event) => {
 
 
 
+// ------------------------------------------------------------Custom Color Picker ---------------------------------------------
 
+
+
+const canvas = document.getElementById('colorCanvas');
+const ctx = canvas.getContext('2d');
+const hueSlider = document.getElementById('hueSlider');
+const colorPreview = document.getElementById('colorPreview');
+const hexInput = document.getElementById('hexInput');
+const marker = document.createElement('div');
+
+marker.classList.add('marker');
+document.querySelector('.color-picker').appendChild(marker);
+
+let isDragging = false;
+
+function drawColorCanvas(hue) {
+    for (let x = 0; x < canvas.width; x++) {
+        for (let y = 0; y < canvas.height; y++) {
+            const saturation = x / canvas.width;
+            const lightness = 1 - y / canvas.height;
+            const [r, g, b] = hslToRgb(hue / 360, saturation, lightness);
+            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+            ctx.fillRect(x, y, 1, 1);
+        }
+    }
+}
+
+function hslToRgb(h, s, l) {
+    let r, g, b;
+    if (s === 0) {
+        r = g = b = l;
+    } else {
+        const hue2rgb = (p, q, t) => {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1 / 6) return p + (q - p) * 6 * t;
+            if (t < 1 / 2) return q;
+            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+            return p;
+        };
+
+        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+        const p = 2 * l - q;
+        r = hue2rgb(p, q, h + 1 / 3);
+        g = hue2rgb(p, q, h);
+        b = hue2rgb(p, q, h - 1 / 3);
+    }
+    return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+}
+
+function rgbToHex(r, g, b) {
+    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
+}
+
+function updateColorCanvas() {
+    const hue = hueSlider.value;
+    drawColorCanvas(hue);
+    const [r, g, b] = hslToRgb(hue / 360, 1, 0.5);
+    const hex = rgbToHex(r, g, b);
+    hueSlider.style.background = `linear-gradient(to right, ${generateHueGradient()})`;
+    updateAllColors(hex);
+}
+
+function generateHueGradient() {
+    let gradient = '';
+    for (let i = 0; i <= 360; i++) {
+        const [r, g, b] = hslToRgb(i / 360, 1, 0.5);
+        gradient += `rgb(${r}, ${g}, ${b}), `;
+    }
+    return gradient.slice(0, -2);
+}
+
+function getColor(event) {
+    const rect = canvas.getBoundingClientRect();
+    const x = Math.max(0, Math.min(event.clientX - rect.left, canvas.width - 1));
+    const y = Math.max(0, Math.min(event.clientY - rect.top, canvas.height - 1));
+
+    const imageData = ctx.getImageData(x, y, 1, 1).data;
+    const r = imageData[0];
+    const g = imageData[1];
+    const b = imageData[2];
+
+    const hex = rgbToHex(r, g, b);
+    updateAllColors(hex);
+    
+    marker.style.left = `${rect.left + x}px`;
+    marker.style.top = `${rect.top + y}px`;
+}
+
+function updateAllColors(hex) {
+    hexInput.value = hex;
+    colorPreview.style.backgroundColor = hex;
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    const [h, s, l] = rgbToHsl(r, g, b);
+    hueSlider.value = Math.round(h * 360);
+    drawColorCanvas(h * 360);
+}
+
+function rgbToHsl(r, g, b) {
+    r /= 255, g /= 255, b /= 255;
+    const max = Math.max(r, g, b), min = Math.min(r, g, b);
+    let h, s, l = (max + min) / 2;
+
+    if (max === min) {
+        h = s = 0;
+    } else {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+            case g: h = (b - r) / d + 2; break;
+            case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+    }
+    return [h, s, l];
+}
+
+hueSlider.addEventListener('input', updateColorCanvas);
+canvas.addEventListener('mousedown', (event) => {
+    isDragging = true;
+    getColor(event);
+});
+canvas.addEventListener('mousemove', (event) => {
+    if (isDragging) {
+        getColor(event);
+    }
+});
+document.addEventListener('mouseup', () => {
+    isDragging = false;
+});
+
+hexInput.addEventListener('input', (event) => {
+    let hex = event.target.value;
+    if (!hex.startsWith('#')) {
+        hex = '#' + hex;
+    }
+    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+        updateAllColors(hex);
+    }
+});
+
+updateColorCanvas();
+
+
+
+
+
+
+
+
+
+
+// ------------------------------------------------------------Custom Color Picker ---------------------------------------------
 
 
 
@@ -949,7 +1152,7 @@ handle.style.cssText = `
 
         div.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-      }else if (event.altKey && event.key === 'd') {
+      }else if (event.altKey && event.key === 'k') {
         selectedElement.position = 'relative';
         const img = document.createElement('img');
      

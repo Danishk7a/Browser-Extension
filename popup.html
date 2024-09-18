@@ -19,24 +19,34 @@
 
     <div id="Extension_Logo"> 
         <!-- <img style="transition: 1s ease-in-out;" id="displayimg" src="x3.gif" height="300px" width="100%"  alt=""> -->
-
+       
        
     </div>
 
-
+    <div id="customColorPicker" style=" position: absolute;height: 135px;width: 100%;display: none;justify-content: center; align-items: center; background-color: #24242450;">
+        <div class="color-picker">
+            <canvas id="colorCanvas" width="100" height="60"></canvas>
+            <input type="range" id="hueSlider" min="0" max="360" value="0">
+    
+            <div class="controls">
+                <input type="text" id="hexInput" value="#000000" maxlength="7">
+                <div class="color-overlay" id="colorPreview"></div>
+            </div>
+        </div>
+    </div>
 
         <div id="Display"> </div>
 
 
         
-    <div id="Nav">
+    <!-- <div id="Nav">
    
         <div id="color-nav" class="nav-items">Colors</div>
         <div id="view-nav" class="nav-items">Gradient</div>
         <div id="user-nav" class="nav-items">Images</div>
 
 
-   </div>
+   </div> -->
 
 
 
@@ -47,7 +57,7 @@
 <div class="hidden" id="Responsive">
     
     <div id="wraapper">
-     <button id="toggleEditMode"><i class="fa-solid fa-arrow-pointer"></i> &nbsp; Select Element</button>
+     <!-- <button id="toggleEditMode"><i class="fa-solid fa-arrow-pointer"></i> &nbsp; Select Element</button> -->
 
      <div style="width: 160px; display: flex; "><span>Apply the Palatte </span> <input id="applyPalatte" type="checkbox"></div>
 
