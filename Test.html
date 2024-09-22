@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palette Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+        .color-box {
+            width: 100px;
+            height: 100px;
+            display: inline-block;
+            margin: 5px;
+            border: 1px solid #ccc;
+        }
+    </style>
+</head>
+<body>
+    <h1>Color Palette Generator</h1>
+    <button id="fetch-colors">Get Colors</button>
+    <div id="color-palette"></div>
+
+<script>
+    document.getElementById('fetch-colors').addEventListener('click', () => {
+    const url = 'https://www.colr.org/json/colors/random/5';
+
+    fetch(url)
+    .then(response => response.json())
+    .then(data => {
+        console.log('Parsed data:', data);
+        const colors = data.colors.map(color => color.hex.slice(1)); // Remove '#' from hex
+        const colorPalette = document.getElementById('color-palette');
+        colorPalette.innerHTML = '';
+
+        colors.forEach(color => {
+            const colorBox = document.createElement('div');
+            colorBox.className = 'color-box';
+            colorBox.style.backgroundColor = `#${color}`;
+            colorPalette.appendChild(colorBox);
+        });
+    })
+    .catch((error) => {
+        console.error('Detailed error:', error);
+        document.getElementById('color-palette').innerHTML = `<p>Error: ${error.message}</p>`;
+    });
+});
+</script>
+</body>
+</html>

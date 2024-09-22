@@ -246,6 +246,8 @@ const bg = document.createElement('div');
 bg.style.height = '100vh';
 bg.style.width = '100%';
 bg.style.position ='fixed'
+bg.style.display ='none'
+
 bg.style.top = '0px'
 // bg.style.background = '#00000052';
 
