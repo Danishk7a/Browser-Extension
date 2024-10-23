@@ -84,7 +84,7 @@ displayArea.id = 'displayArea'
 
 
 // }
-
+let currentPalatte = null; 
 
 function rgbStringToHex(rgbArray) {
     return rgbArray.map(rgb => {
@@ -126,6 +126,7 @@ function WebsiteThemeColor() {
 
     websitePalatte =  rgbStringToHex(websitePalatte)
   console.log('Website Colors : ', websitePalatte)
+  currentPalatte = websitePalatte
 }
 
 WebsiteThemeColor()
@@ -142,7 +143,7 @@ function getContrastYIQ(hexcolor) {
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? 'black' : 'white';
 }
-let currentPalatte = null; 
+
 
 function DisplayPalatte(arr){
 
@@ -431,7 +432,7 @@ Extension.addEventListener('mousedown', (e) => {
 });
 
 
-
+let generattedPalatte = []
 
 
 function makeRequest( currentPalatte, lockedColorInfo){
@@ -455,6 +456,21 @@ function makeRequest( currentPalatte, lockedColorInfo){
 })
 .then(data => {
     console.log('Success:', data);
+    generattedPalatte = data.msg
+
+    for(let k=0; k< currentPalatte.length;k++){
+          
+      if(lockedColorInfo[k]){
+
+        console.log("This i locked index : ", k);
+
+      }else{
+
+        currentPalatte[k] = generattedPalatte[k]
+
+      }
+
+    }
 
 })
 .catch(error => {
@@ -478,7 +494,7 @@ function updateColors(currentPalatte, lockedColorInfo) {
 
 
 
-let generattedPalatte = []
+
 
 async function changeTheme() {
   
@@ -495,21 +511,9 @@ async function changeTheme() {
 
     
 if (Object.values(lockedColorInfo).some(value => value === true)) {
-        // makeRequest(currentPalatte, lockedColorInfo);
+       makeRequest(currentPalatte, lockedColorInfo);
 
-        for(let k=0; k< currentPalatte.length;k++){
-          
-          if(lockedColorInfo[k]){
-
-            console.log("This i locked index : ", k);
-
-          }else{
-
-            currentPalatte[k] = generattedPalatte[k]
-
-          }
-
-        }
+    
 
  
 
