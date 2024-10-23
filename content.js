@@ -546,7 +546,7 @@ function injectEditMode() {
       }
       selectedElement = null;
       removeToggleButton();
-    //   hideSidemenu();
+
 
       console.log('Edit mode disabled');
     }
@@ -620,27 +620,13 @@ function injectEditMode() {
       menuTrigger.className = 'extension-menu-trigger';
       disableDefaults();
 
-//       const handle = document.createElement('div');
-// handle.id = 'handle';
-// handle.style.cssText = `
-//   width: 10px;
-//   height: 10px;
-//   background-color: #000;
-//   position: absolute;
-//   right: 0;
-//   bottom: 0;
-//   cursor: se-resize;
-// `;
-
-
-   
       
       element.appendChild(menuTrigger);
-    //   element.appendChild(handle)
+
 
       menuTrigger.addEventListener('click', (e) => {
         e.stopPropagation();
-        // showSidemenu(element);
+   
 
       });
 
