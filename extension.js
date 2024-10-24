@@ -154,6 +154,12 @@ function DisplayPalatte(arr){
   
   for (let i = 0 ; i < arr.length  ; i++) {
    let  textColor  = getContrastYIQ(arr[i])
+
+   const div2 = document.createElement('div');
+   div2.style.height = '100%';
+   div2.style.width = '100%';
+   div2.style.background = `url('${chrome.runtime.getURL('transparent.jpg')}')`;
+
     const div = document.createElement('div');
     div.style.height = '100%';
     div.style.width = '100%';
@@ -168,6 +174,9 @@ function DisplayPalatte(arr){
     div.style.gap = '30px'
     div.style.alignItems = 'center'
     div.style.justifyContent = 'center'
+
+   
+
 
     div.addEventListener('mouseover', () => {
       lock.style.display = 'block'; 
@@ -279,7 +288,15 @@ function DisplayPalatte(arr){
       hueSlider.id = "hueSlider";
       hueSlider.min = 0;
       hueSlider.max = 360;
-      hueSlider.value = 0;
+
+      const transparency = document.createElement('input')
+      transparency.type = "range";
+      transparency.id = "transparency";
+      transparency.min = 0;
+      transparency.max = 100;
+
+
+
   
       const controlsDiv = document.createElement("div");
       controlsDiv.className = "controls";
@@ -289,7 +306,7 @@ function DisplayPalatte(arr){
       hexInput.id = "hexInput";
       hexInput.value = "#000000";
       hexInput.maxLength = 7;
-  
+
       const colorOverlay = document.createElement("div");
       colorOverlay.className = "color-overlay";
       colorOverlay.id = "colorPreview";
@@ -298,6 +315,7 @@ function DisplayPalatte(arr){
       controlsDiv.appendChild(colorOverlay);
       colorPickerDiv.appendChild(canvas);
       colorPickerDiv.appendChild(hueSlider);
+      colorPickerDiv.appendChild(transparency);
       colorPickerDiv.appendChild(controlsDiv);
       colorPickerWindowsAb.appendChild(colorPickerDiv);
       displayArea.appendChild(colorPickerWindowsAb);
@@ -318,7 +336,16 @@ function DisplayPalatte(arr){
       // ---------------------------------------------------------Tested Code --------------------------------------------------------
 
 
+      transparency.addEventListener('input', (e)=>{
+        e.preventDefault()
+          div.style.backgroundColor = `${arr[i]}${e.target.value}`;
 
+
+      })
+    
+      hexInput.focus()
+      hexInput.select()
+  
       
     const ctx = canvas.getContext('2d');
     let isDragging = false;
@@ -361,12 +388,22 @@ function DisplayPalatte(arr){
         return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
     }
 
+    function generateHueGradient() {
+      let gradient = '';
+      for (let i = 0; i <= 360; i++) {
+          const [r, g, b] = hslToRgb(i / 360, 1, 0.5);
+          gradient += `rgb(${r}, ${g}, ${b}), `;
+      }
+      return gradient.slice(0, -2);
+  }
     function updateColorCanvas() {
         const hue = hueSlider.value;
         drawColorCanvas(hue);
         const [r, g, b] = hslToRgb(hue / 360, 1, 0.5);
         const hex = rgbToHex(r, g, b);
         colorOverlay.style.backgroundColor = hex;
+        hueSlider.style.background = `linear-gradient(to right, ${generateHueGradient()})`;
+
         hexInput.value = hex;
      
         div.style.backgroundColor =  hex;
@@ -462,8 +499,8 @@ function DisplayPalatte(arr){
 
 
 
-
-    displayArea.appendChild(div);
+    div2.appendChild(div)
+    displayArea.appendChild(div2);
   }
 
 }
