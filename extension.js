@@ -253,9 +253,202 @@ function DisplayPalatte(arr){
     colorCode.style.cursor = 'pointer'; 
     div.appendChild(colorCode)
 
+    
     colorCode.addEventListener('click', ()=>{
-      customColorPicker.style.display = 'flex';
+
+      const colorPickerWindowsAb = document.createElement('div');
+      colorPickerWindowsAb.style.position = 'absolute';
+      colorPickerWindowsAb.style.display = 'flex'
+      colorPickerWindowsAb.style.justifyContent = 'center'
+      colorPickerWindowsAb.style.alignItems = 'center';
+      colorPickerWindowsAb.style.width = '100%';
+      colorPickerWindowsAb.style.height = '50%'
+      colorPickerWindowsAb.style.backgroundColor = '#00000020'
+
+      
+      const colorPickerDiv = document.createElement("div");
+      colorPickerDiv.className = "color-picker";
   
+      const canvas = document.createElement("canvas");
+      canvas.id = "colorCanvas";
+      canvas.width = 100;
+      canvas.height = 60;
+  
+      const hueSlider = document.createElement("input");
+      hueSlider.type = "range";
+      hueSlider.id = "hueSlider";
+      hueSlider.min = 0;
+      hueSlider.max = 360;
+      hueSlider.value = 0;
+  
+      const controlsDiv = document.createElement("div");
+      controlsDiv.className = "controls";
+  
+      const hexInput = document.createElement("input");
+      hexInput.type = "text";
+      hexInput.id = "hexInput";
+      hexInput.value = "#000000";
+      hexInput.maxLength = 7;
+  
+      const colorOverlay = document.createElement("div");
+      colorOverlay.className = "color-overlay";
+      colorOverlay.id = "colorPreview";
+  
+      controlsDiv.appendChild(hexInput);
+      controlsDiv.appendChild(colorOverlay);
+      colorPickerDiv.appendChild(canvas);
+      colorPickerDiv.appendChild(hueSlider);
+      colorPickerDiv.appendChild(controlsDiv);
+      colorPickerWindowsAb.appendChild(colorPickerDiv);
+      displayArea.appendChild(colorPickerWindowsAb);
+  
+  
+      colorPickerWindowsAb.addEventListener('click', ()=>{
+
+
+        colorPickerWindowsAb.style.display = 'none'
+
+      })
+
+      colorPickerDiv.addEventListener('click', function(event) {
+        event.stopPropagation(); // Prevents the click event from bubbling up to the parent
+    });
+
+
+      // ---------------------------------------------------------Tested Code --------------------------------------------------------
+
+
+
+      
+    const ctx = canvas.getContext('2d');
+    let isDragging = false;
+
+    function drawColorCanvas(hue) {
+        for (let x = 0; x < canvas.width; x++) {
+            for (let y = 0; y < canvas.height; y++) {
+                const saturation = x / canvas.width;
+                const lightness = 1 - y / canvas.height;
+                const [r, g, b] = hslToRgb(hue / 360, saturation, lightness);
+                ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
+                ctx.fillRect(x, y, 1, 1);
+            }
+        }
+    }
+
+    function hslToRgb(h, s, l) {
+        let r, g, b;
+        if (s === 0) {
+            r = g = b = l;
+        } else {
+            const hue2rgb = (p, q, t) => {
+                if (t < 0) t += 1;
+                if (t > 1) t -= 1;
+                if (t < 1 / 6) return p + (q - p) * 6 * t;
+                if (t < 1 / 2) return q;
+                if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+                return p;
+            };
+            const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+            const p = 2 * l - q;
+            r = hue2rgb(p, q, h + 1 / 3);
+            g = hue2rgb(p, q, h);
+            b = hue2rgb(p, q, h - 1 / 3);
+        }
+        return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+    }
+
+    function rgbToHex(r, g, b) {
+        return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
+    }
+
+    function updateColorCanvas() {
+        const hue = hueSlider.value;
+        drawColorCanvas(hue);
+        const [r, g, b] = hslToRgb(hue / 360, 1, 0.5);
+        const hex = rgbToHex(r, g, b);
+        colorOverlay.style.backgroundColor = hex;
+        hexInput.value = hex;
+     
+        div.style.backgroundColor =  hex;
+    }
+
+    function getColor(event) {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.max(0, Math.min(event.clientX - rect.left, canvas.width - 1));
+        const y = Math.max(0, Math.min(event.clientY - rect.top, canvas.height - 1));
+        const imageData = ctx.getImageData(x, y, 1, 1).data;
+        const r = imageData[0];
+        const g = imageData[1];
+        const b = imageData[2];
+        const hex = rgbToHex(r, g, b);
+        hexInput.value = hex;
+        colorOverlay.style.backgroundColor = hex;
+     
+        div.style.backgroundColor =  hex; 
+    }
+
+    hueSlider.addEventListener('input', updateColorCanvas);
+    canvas.addEventListener('mousedown', (event) => {
+        isDragging = true;
+        getColor(event);
+    });
+    canvas.addEventListener('mousemove', (event) => {
+        if (isDragging) {
+            getColor(event);
+        }
+    });
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    hexInput.addEventListener('input', (event) => {
+        let hex = event.target.value;
+        if (!hex.startsWith('#')) {
+            hex = '#' + hex;
+        }
+        if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+            const [h, s, l] = rgbToHsl(r, g, b);
+            hueSlider.value = Math.round(h * 360);
+            updateColorCanvas();
+        }
+    });
+
+    function rgbToHsl(r, g, b) {
+        r /= 255; g /= 255; b /= 255;
+        const max = Math.max(r, g, b), min = Math.min(r, g, b);
+        let h, s, l = (max + min) / 2;
+        if (max === min) {
+            h = s = 0; 
+        } else {
+            const d = max - min;
+            s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+            switch (max) {
+                case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+                case g: h = (b - r) / d + 2; break;
+                case b: h = (r - g) / d + 4; break;
+            }
+            h /= 6;
+        }
+        return [h, s, l];
+    }
+
+    updateColorCanvas();
+
+
+
+
+
+
+
+
+
+
+
+
+      // ---------------------------------------------------------Tested Code --------------------------------------------------------
 
 
 
@@ -401,7 +594,7 @@ ExtensionBody.appendChild(container);
 document.body.appendChild(Extension);
 let offsetX, offsetY;
 
-Extension.addEventListener('mousedown', (e) => {
+ExtensionHeader.addEventListener('mousedown', (e) => {
     offsetX = e.clientX - Extension.getBoundingClientRect().left;
     offsetY = e.clientY - Extension.getBoundingClientRect().top;
 
@@ -1416,210 +1609,6 @@ console.log("EX Style : ",explicitStyles);
 
 
 
-
-
-  
-// ------------------------------------------------------------Custom Color Picker ---------------------------------------------
-
-const customColorPicker = document.createElement('div');
-customColorPicker.id = 'customColorPicker';
-customColorPicker.style.position = 'absolute';
-customColorPicker.style.height = '135px';
-customColorPicker.style.width = '100%';
-customColorPicker.style.display = 'none';
-customColorPicker.style.justifyContent = 'center';
-customColorPicker.style.alignItems = 'center';
-customColorPicker.style.backgroundColor = '#24242450';
-
-// Create the inner color picker div
-const colorPicker = document.createElement('div');
-colorPicker.className = 'color-picker';
-
-// Create the canvas
-const colorCanvas = document.createElement('canvas');
-colorCanvas.id = 'colorCanvas';
-colorCanvas.width = 100;
-colorCanvas.height = 60;
-
-// Create the hue slider
-const hueSlider = document.createElement('input');
-hueSlider.type = 'range';
-hueSlider.id = 'hueSlider';
-hueSlider.min = 0;
-hueSlider.max = 360;
-hueSlider.value = 0;
-
-// Create the controls div
-const controls = document.createElement('div');
-controls.className = 'controls';
-
-// Create the hex input
-const hexInput = document.createElement('input');
-hexInput.type = 'text';
-hexInput.id = 'hexInput';
-hexInput.value = '#000000';
-hexInput.maxLength = 7;
-
-// Create the color overlay div
-const colorPreview = document.createElement('div');
-colorPreview.className = 'color-overlay';
-colorPreview.id = 'colorPreview';
-
-// Assemble the color picker
-controls.appendChild(hexInput);
-controls.appendChild(colorPreview);
-colorPicker.appendChild(colorCanvas);
-colorPicker.appendChild(hueSlider);
-colorPicker.appendChild(controls);
-customColorPicker.appendChild(colorPicker);
-
-// Append to body or any other desired element
-document.body.appendChild(customColorPicker);
-
-const ctx = colorCanvas.getContext('2d');
-const marker = document.createElement('div');
-marker.classList.add('marker');
-colorPicker.appendChild(marker);
-
-let isDragging = false;
-
-function drawColorCanvas(hue) {
-    for (let x = 0; x < colorCanvas.width; x++) {
-        for (let y = 0; y < colorCanvas.height; y++) {
-            const saturation = x / colorCanvas.width;
-            const lightness = 1 - y / colorCanvas.height;
-            const [r, g, b] = hslToRgb(hue / 360, saturation, lightness);
-            ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
-            ctx.fillRect(x, y, 1, 1);
-        }
-    }
-}
-
-function hslToRgb(h, s, l) {
-    let r, g, b;
-    if (s === 0) {
-        r = g = b = l * 255;
-    } else {
-        const hue2rgb = (p, q, t) => {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1 / 6) return p + (q - p) * 6 * t;
-            if (t < 1 / 2) return q;
-            if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
-            return p;
-        };
-
-        const q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-        const p = 2 * l - q;
-        r = hue2rgb(p, q, h + 1 / 3);
-        g = hue2rgb(p, q, h);
-        b = hue2rgb(p, q, h - 1 / 3);
-    }
-    return [Math.round(r), Math.round(g), Math.round(b)];
-}
-
-function rgbToHex(r, g, b) {
-    return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).padStart(6, '0')}`;
-}
-
-function updateColorCanvas() {
-    const hue = hueSlider.value;
-    drawColorCanvas(hue);
-    const [r, g, b] = hslToRgb(hue / 360, 1, 0.5);
-    const hex = rgbToHex(r, g, b);
-    hueSlider.style.background = `linear-gradient(to right, ${generateHueGradient()})`;
-    updateAllColors(hex);
-}
-
-function generateHueGradient() {
-    let gradient = '';
-    for (let i = 0; i <= 360; i++) {
-        const [r, g, b] = hslToRgb(i / 360, 1, 0.5);
-        gradient += `rgb(${r}, ${g}, ${b}), `;
-    }
-    return gradient.slice(0, -2);
-}
-
-function getColor(event) {
-    const rect = colorCanvas.getBoundingClientRect();
-    const x = Math.max(0, Math.min(event.clientX - rect.left, colorCanvas.width - 1));
-    const y = Math.max(0, Math.min(event.clientY - rect.top, colorCanvas.height - 1));
-
-    const imageData = ctx.getImageData(x, y, 1, 1).data;
-    const r = imageData[0];
-    const g = imageData[1];
-    const b = imageData[2];
-
-    const hex = rgbToHex(r, g, b);
-    updateAllColors(hex);
-
-    marker.style.left = `${rect.left + x}px`;
-    marker.style.top = `${rect.top + y}px`;
-}
-
-function updateAllColors(hex) {
-    hexInput.value = hex;
-    colorPreview.style.backgroundColor = hex;
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    const [h, s, l] = rgbToHsl(r, g, b);
-    hueSlider.value = Math.round(h * 360);
-    drawColorCanvas(h * 360);
-}
-
-function rgbToHsl(r, g, b) {
-    r /= 255, g /= 255, b /= 255;
-    const max = Math.max(r, g, b), min = Math.min(r, g, b);
-    let h, s, l = (max + min) / 2;
-
-    if (max === min) {
-        h = s = 0;
-    } else {
-        const d = max - min;
-        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-        switch (max) {
-            case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-            case g: h = (b - r) / d + 2; break;
-            case b: h = (r - g) / d + 4; break;
-        }
-        h /= 6;
-    }
-    return [h, s, l];
-}
-
-hueSlider.addEventListener('input', updateColorCanvas);
-colorCanvas.addEventListener('mousedown', (event) => {
-    isDragging = true;
-    getColor(event);
-});
-colorCanvas.addEventListener('mousemove', (event) => {
-    if (isDragging) {
-        getColor(event);
-    }
-});
-document.addEventListener('mouseup', () => {
-    isDragging = false;
-});
-
-hexInput.addEventListener('input', (event) => {
-    let hex = event.target.value;
-    if (!hex.startsWith('#')) {
-        hex = '#' + hex;
-    }
-    if (/^#[0-9A-Fa-f]{6}$/.test(hex)) {
-        updateAllColors(hex);
-    }
-});
-
-updateColorCanvas();
-
-
-
-
-
-
-// ------------------------------------------------------------Custom Color Picker ---------------------------------------------
 
 
 

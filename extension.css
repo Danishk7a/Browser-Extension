@@ -180,13 +180,13 @@ background-color: tomato;
                 flex-direction: column;
                 align-items: center;
                 background-color: #171717;
-                /* border: 1px solid #525252; */
+              
                 padding: 6px 23px 9px 23px;
                 border-radius: 9px;
                 box-shadow: 4px 1px 13px 2px black;
                 position: relative;
-                height: 130px;
-                width: 100px;
+                height: 160px;
+                width: 130px;
               }
               
               canvas {
@@ -228,7 +228,7 @@ background-color: tomato;
               .color-overlay {
                 position: absolute;
                 right: 23px;
-                bottom: 17px;
+                bottom: 32px;
                 width: 20px;
                 height: 20px;
                 background-color: rgba(255, 0, 0, 0.3);
