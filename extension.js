@@ -4,12 +4,13 @@ const fontawesome = document.createElement('link');
 fontawesome.rel = 'stylesheet';
 fontawesome.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css';
 document.head.appendChild(fontawesome);
-
+let selectedElement = null;
 const Extension = document.createElement('div');
 Extension.id = 'Extension'
 Extension.style.position = 'fixed';
 Extension.style.top = '30px';
 Extension.classList.add('not-editable')
+Extension.classList.add('not-selectable')
 Extension.style.right = '30px';
 Extension.style.backgroundColor = '#171717';
 Extension.style.height = '400px';
@@ -17,16 +18,19 @@ Extension.style.width = '300px';
 Extension.style.zIndex = '99999999';
 Extension.style.cursor = 'move'; 
 Extension.style.boxShadow = '1px 2px 10px 2px black'; 
+
 // Extension.style.padding = '20px'; 
 
 
 const ExtensionHeader = document.createElement('div');
 ExtensionHeader.id = 'ExtensionHeader'
 ExtensionHeader.classList.add('not-editable')
+ExtensionHeader.classList.add('not-selectable')
 
 const ExtensionBody = document.createElement('div');
 ExtensionBody.id = 'extensionBody'
 ExtensionBody.classList.add('not-editable')
+ExtensionBody.classList.add('not-selectable')
 
 
 
@@ -49,10 +53,13 @@ minimize.id = 'minimize'
 
 minimize.innerText = '-';
 minimize.classList.add('not-editable')
-
+  const setting = document.createElement('i');
+  setting.className = 'fa-solid fa-gear';
+  setting.id = 'setting';
 
 ExtensionHeader.appendChild(cross)
 ExtensionHeader.appendChild(minimize)
+ExtensionHeader.appendChild(setting)
 
 cross.addEventListener('click', ()=>{
     document.getElementById('Extension').style.display = 'none'
@@ -143,6 +150,8 @@ function getContrastYIQ(hexcolor) {
   const yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
   return (yiq >= 128) ? 'black' : 'white';
 }
+
+
 
 
 function DisplayPalatte(arr){
@@ -294,6 +303,7 @@ function DisplayPalatte(arr){
       transparency.id = "transparency";
       transparency.min = 0;
       transparency.max = 100;
+      transparency.defaultValue = 100;
 
 
 
@@ -339,7 +349,15 @@ function DisplayPalatte(arr){
       transparency.addEventListener('input', (e)=>{
         e.preventDefault()
           div.style.backgroundColor = `${arr[i]}${e.target.value}`;
+          console.log("op : ", `${arr[i]}${e.target.value}`)
+          if(e.target.value >= 100){
+            div.style.backgroundColor = `${arr[i]}`;
 
+          }
+
+
+          hexInput.focus()
+          hexInput.select()
 
       })
     
@@ -358,6 +376,7 @@ function DisplayPalatte(arr){
                 const [r, g, b] = hslToRgb(hue / 360, saturation, lightness);
                 ctx.fillStyle = `rgb(${r}, ${g}, ${b})`;
                 ctx.fillRect(x, y, 1, 1);
+               
             }
         }
     }
@@ -401,12 +420,17 @@ function DisplayPalatte(arr){
         drawColorCanvas(hue);
         const [r, g, b] = hslToRgb(hue / 360, 1, 0.5);
         const hex = rgbToHex(r, g, b);
+        arr[i] = hex;
         colorOverlay.style.backgroundColor = hex;
         hueSlider.style.background = `linear-gradient(to right, ${generateHueGradient()})`;
 
         hexInput.value = hex;
+
      
         div.style.backgroundColor =  hex;
+     
+        hexInput.focus()
+        hexInput.select()
     }
 
     function getColor(event) {
@@ -419,7 +443,11 @@ function DisplayPalatte(arr){
         const b = imageData[2];
         const hex = rgbToHex(r, g, b);
         hexInput.value = hex;
+   
         colorOverlay.style.backgroundColor = hex;
+        hexInput.focus()
+        hexInput.select()
+    
      
         div.style.backgroundColor =  hex; 
     }
@@ -449,6 +477,7 @@ function DisplayPalatte(arr){
             const b = parseInt(hex.slice(5, 7), 16);
             const [h, s, l] = rgbToHsl(r, g, b);
             hueSlider.value = Math.round(h * 360);
+            arr[i] = event.target.value
             updateColorCanvas();
         }
     });
@@ -854,6 +883,114 @@ DisplayPalatte(currentPalatte);
     
   }
 
+  function appendMenuAfterSelectandClick() {
+    console.log("Creating SelectedMenu and Xcross");
+
+    // Create the main menu container
+    const SelectedMenu = document.createElement('div');
+    SelectedMenu.id = 'SelectedMenu';
+    SelectedMenu.classList.add('not-selectable');
+
+    // Create the X cross button with content and text
+    const Xcross = document.createElement('div');
+    Xcross.style.display = 'flex';
+    Xcross.style.height = '25px';
+    Xcross.style.width = '50%';
+    Xcross.style.borderRadius = '11px';
+    Xcross.style.justifyContent = 'space-between';
+    Xcross.style.alignItems = 'center';
+    Xcross.style.padding = '0 10px';  // Add padding for text
+    Xcross.style.gap = '10px';
+    Xcross.classList.add('not-selectable');
+    Xcross.style.cursor = 'pointer';
+    Xcross.style.backgroundColor = '#313030';
+
+      // Create color input fields
+      const colorInput1 = document.createElement('input');
+      colorInput1.type = 'color';
+      colorInput1.value = '#ff7e5f'; // Default color
+      colorInput1.classList.add('not-selectable')
+      colorInput1.addEventListener('input', updateGradient);
+  
+      const colorInput2 = document.createElement('input');
+      colorInput2.type = 'color';
+      colorInput2.value = '#feb47b'; // Default color
+      colorInput2.classList.add('not-selectable')
+      colorInput2.addEventListener('input', updateGradient);
+
+ // Append color inputs to SelectedMenu
+ SelectedMenu.appendChild(colorInput1);
+ SelectedMenu.appendChild(colorInput2);  
+
+
+
+ function updateGradient() {
+  const color1 = colorInput1.value;
+  const color2 = colorInput2.value;
+  selectedElement.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
+}
+
+// Initial gradient application
+updateGradient();
+
+
+
+
+
+
+
+    // Add visible content to Xcross
+    const tagText = document.createElement('span');
+    tagText.textContent = selectedElement ? `${selectedElement.tagName}${selectedElement.id ? ' #' + selectedElement.id : ''}` : 'Element';
+    tagText.style.color = '#fff';
+    tagText.classList.add('not-selected');
+
+    const xIcon = document.createElement('i');
+    xIcon.className = 'fa-regular fa-circle-xmark not-selected';
+    xIcon.style.color = '#fff';
+
+    // Append text and icon to Xcross
+    Xcross.appendChild(tagText);
+    Xcross.appendChild(xIcon);
+
+  
+
+    // For debugging, add mousedown event
+    Xcross.addEventListener('mousedown', function(e) {
+        console.log("Mouse down on Xcross");
+        SelectedMenu.remove()
+        window.toggleEditMode();
+        e.stopPropagation();
+    });
+
+    // Append Xcross to SelectedMenu
+    SelectedMenu.appendChild(Xcross);
+    
+    // Check if extensionBody exists
+    const extensionBody = document.getElementById('extensionBody');
+    if (extensionBody) {
+        // Clear any existing SelectedMenu
+        const existingMenu = extensionBody.querySelector('#SelectedMenu');
+        if (existingMenu) {
+            extensionBody.removeChild(existingMenu);
+        }
+        
+        extensionBody.appendChild(SelectedMenu);
+        console.log("SelectedMenu appended to extensionBody");
+    } else {
+        console.error("extensionBody not found");
+        return;
+    }
+
+    // Debug log to verify element creation
+    console.log("Created SelectedMenu with Xcross:", SelectedMenu);
+}
+
+// Call the function to test
+// appendMenuAfterSelectandClick();
+
+
+
 
 
   function injectEditMode() {
@@ -862,35 +999,44 @@ DisplayPalatte(currentPalatte);
       return;
     }
 
-    const elements = document.querySelectorAll('*');
+   // Select all elements on the page
+   const allElements = document.querySelectorAll('*');
+    
+   function handleMouseEnter(event) {
+       if (!event.target.classList.contains('not-selectable')) {
+           event.target.style.outline = '2px solid blue'; // Add outline to the hovered element
+       }
+   }
 
-    // Function to add hover effect
-    elements.forEach(element => {
-        element.addEventListener('mouseenter', () => {
-            element.style.outline = '2px solid blue'; // Change color and width
-        });
+   function handleMouseLeave(event) {
+       if (!event.target.classList.contains('not-selectable')) {
+           event.target.style.outline = 'none'; // Remove the outline when not hovering
+       }
+   }
 
-        element.addEventListener('mouseleave', () => {
-            element.style.outline = 'none'; // Remove the outline
-        });
-    });
+   allElements.forEach(element => {
+       element.addEventListener('mouseenter', handleMouseEnter);
+       element.addEventListener('mouseleave', handleMouseLeave);
+   });
+
+  
   
     window.domEditModeInjected = true;
     let editMode = false;
-    let selectedElement = null;
+
   
-    const style = document.createElement('style');
-    // style.classList.add('resizable')
-    style.textContent = `
-      .extension-selected-outline {
-        outline: 2px solid #0066ff;
-        outline-offset: -2px;
-      }
+    // const style = document.createElement('style');
+    // // style.classList.add('resizable')
+    // style.textContent = `
+    //   .extension-selected-outline {
+    //     outline: 2px solid #0066ff;
+    //     outline-offset: -2px;
+    //   }
       
      
     
-    `;
-    document.head.appendChild(style);
+    // `;
+    // document.head.appendChild(style);
   
     window.toggleEditMode = function() {
       editMode = !editMode;
@@ -941,7 +1087,12 @@ DisplayPalatte(currentPalatte);
       }
       
       selectedElement = event.target;
-      addEditUI(selectedElement);
+      if(selectedElement.classList.contains('not-selectable')){
+
+      }else{
+
+        addEditUI(selectedElement);
+      }
     }
 
     function disableDefaults() {
@@ -975,49 +1126,36 @@ DisplayPalatte(currentPalatte);
   
     function addEditUI(element) {
       console.log('Adding edit UI to element:', element);
-      element.classList.add('extension-selected-outline');
-      element.classList.add('resizable')
+      // element.classList.add('extension-selected-outline');
+      // element.classList.add('resizable')
       element.style.position = 'relative';
 
-      if (element.textContent.trim() !== '') {
-        element.addEventListener('dblclick', () => {
-          element.contentEditable = 'true'; 
-          element.focus();
-        });
-      }
+      // if (element.textContent.trim() !== '') {
+      //   element.addEventListener('dblclick', () => {
+      //     element.contentEditable = 'true'; 
+      //     element.focus();
+      //   });
+      // }
 
-      const stylep =  document.createElement('div');
-      stylep.id = 'stylep';
-      document.getElementById('extensionBody').appendChild(stylep)
+      // ------------------------------------------------------------------Append in Extension -----------------------------------------
+    
+      appendMenuAfterSelectandClick()
     
        
-      const menuTrigger = document.createElement('div');
-      menuTrigger.className = 'extension-menu-trigger';
+      // const menuTrigger = document.createElement('div');
+      // menuTrigger.className = 'extension-menu-trigger';
       disableDefaults();
-
-//       const handle = document.createElement('div');
-// handle.id = 'handle';
-// handle.style.cssText = `
-//   width: 10px;
-//   height: 10px;
-//   background-color: #000;
-//   position: absolute;
-//   right: 0;
-//   bottom: 0;
-//   cursor: se-resize;
-// `;
-
 
    
       
-      element.appendChild(menuTrigger);
+      // element.appendChild(menuTrigger);
       // element.appendChild(handle)
 
 
-      menuTrigger.addEventListener('click', (e) => {
-        e.stopPropagation();
-        showSidemenu(element);
-      });
+      // menuTrigger.addEventListener('click', (e) => {
+      //   e.stopPropagation();
+      //   showSidemenu(element);
+      // });
 
       // makeDraggable(element);
         // makeResizableAndDraggable(element, handle);
@@ -1042,6 +1180,15 @@ DisplayPalatte(currentPalatte);
       if (element.resizeHandle) {
         element.resizeHandle.removeEventListener('mousedown', element.startResizing);
       }
+
+
+   
+        allElements.forEach(element => {
+            element.removeEventListener('mouseenter', handleMouseEnter);
+            element.removeEventListener('mouseleave', handleMouseLeave);
+        });
+
+
     }
 
     
@@ -1049,109 +1196,7 @@ DisplayPalatte(currentPalatte);
    
 
 
-    // function makeResizableAndDraggable(element, handle) {
    
-      
-
-    //   let isDragging = false;
-    //   let isResizing = false;
-    //   let startX, startY, startWidth, startHeight, startLeft, startTop, startFontSize ;
-    
-    //   // Function to start dragging
-    //   function startDragging(e) {
-    //     if (isResizing) return;
-    //     isDragging = true;
-    //     startX = e.clientX;
-    //     startY = e.clientY;
-    //     startLeft = parseInt(window.getComputedStyle(element).left, 10) || 0;
-    //     startTop = parseInt(window.getComputedStyle(element).top, 10) || 0;
-    //     document.addEventListener('mousemove', onDragMove);
-    //     document.addEventListener('mouseup', stopDragging);
-    //   }
-    
-    //   // Function to handle dragging
-    //   function onDragMove(e) {
-    //     if (!isDragging) return;
-    //     const deltaX = e.clientX - startX;
-    //     const deltaY = e.clientY - startY;
-    //     element.style.left = `${startLeft + deltaX}px`;
-    //     element.style.top = `${startTop + deltaY}px`;
-    //   }
-    
-    //   // Function to stop dragging
-    //   function stopDragging() {
-    //     isDragging = false;
-    //     document.removeEventListener('mousemove', onDragMove);
-    //     document.removeEventListener('mouseup', stopDragging);
-    //   }
-    
-    //   // Function to start resizing
-    //   function startResizing(e) {
-    //     if (isDragging) return;
-    //     e.preventDefault();
-    //     isResizing = true;
-    //     startX = e.clientX;
-    //     startY = e.clientY;
-    //     startWidth = parseInt(window.getComputedStyle(element).width, 10);
-    //     startHeight = parseInt(window.getComputedStyle(element).height, 10);
-        
-    //   startFontSize =  parseInt(window.getComputedStyle(element).fontSize, 10);
-    //     document.addEventListener('mousemove', onResizeMove);
-    //     document.addEventListener('mouseup', stopResizing);
-
-    //   }
-    
-    //   // Function to handle resizing
-    //   function onResizeMove(e) {
-    //     if (!isResizing) return;
-    //     const deltaX = e.clientX - startX;
-    //     const deltaY = e.clientY - startY;
-        
-    //     const newWidth = startWidth + deltaX;
-    //     const newHeight = startHeight + deltaY;
-        
-    //     element.style.width = `${newWidth}px`;
-    //     element.style.height = `${newHeight}px`;
-
-       
-        
-    //   // const diff = deltaX + deltaY
-    
-    //  const newFontSize = startFontSize + deltaX
-
-
-    //  element.style.fontSize = `${newFontSize}px`
-
-   
-
-
-        
-    //     // const images = element.getElementsByTagName('img');
-    //     // for (let img of images) {
-    //     //   img.style.width = `${newWidth}px`;
-    //     //   img.style.height = `${newHeight}px`;
-    //     //   // img.style.objectFit = 'cover';
-    //     // }
-
-
-    //   }
-    
-    //   // Function to stop resizing
-    //   function stopResizing() {
-    //     isResizing = false;
-    //     document.removeEventListener('mousemove', onResizeMove);
-    //     document.removeEventListener('mouseup', stopResizing);
-    //   }
-    
-    //   // Attach event listeners
-    //   element.addEventListener('mousedown', startDragging);
-    //   handle.addEventListener('mousedown', startResizing);
-
-    //   element.startDragging = startDragging;
-    //   element.startResizing = startResizing;
-    //   element.resizeHandle = handle;
-
-    // }
 
 
 
@@ -1456,39 +1501,39 @@ let selectedFont = fonts[index];
       });
 
       // Style tab event listeners
-      document.getElementById('bgcolor-picker').addEventListener('input', (e) => {
-        element.style.backgroundColor = e.target.value;
-      });
+      // document.getElementById('bgcolor-picker').addEventListener('input', (e) => {
+      //   element.style.backgroundColor = e.target.value;
+      // });
 
-      document.getElementById('color-picker').addEventListener('input', (e) => {
-        element.style.color = e.target.value;
-      });
+      // document.getElementById('color-picker').addEventListener('input', (e) => {
+      //   element.style.color = e.target.value;
+      // });
 
-      document.getElementById('gradient-input').addEventListener('input', (e) => {
-        element.style.backgroundImage = e.target.value;
-      });
+      // document.getElementById('gradient-input').addEventListener('input', (e) => {
+      //   element.style.backgroundImage = e.target.value;
+      // });
 
-      document.getElementById('border-input').addEventListener('input', (e) => {
-        element.style.border = e.target.value;
-      });
+      // document.getElementById('border-input').addEventListener('input', (e) => {
+      //   element.style.border = e.target.value;
+      // });
 
-      document.getElementById('box-shadow-inputs').addEventListener('input', (e) => {
-        // element.style.boxShadow = e.target.value;
+      // document.getElementById('box-shadow-inputs').addEventListener('input', (e) => {
+      //   // element.style.boxShadow = e.target.value;
 
-        element.style.filter = `drop-shadow(30px 10px ${e.target.value}px #242424)`
+      //   element.style.filter = `drop-shadow(30px 10px ${e.target.value}px #242424)`
       
-      });
+      // });
 
-      document.getElementById('fileInput').addEventListener('change', function(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                element.src = e.target.result;
-            };
-            reader.readAsDataURL(file);
-        }
-    });
+    //   document.getElementById('fileInput').addEventListener('change', function(event) {
+    //     const file = event.target.files[0];
+    //     if (file) {
+    //         const reader = new FileReader();
+    //         reader.onload = function(e) {
+    //             element.src = e.target.result;
+    //         };
+    //         reader.readAsDataURL(file);
+    //     }
+    // });
      
 
 
@@ -1508,37 +1553,37 @@ let selectedFont = fonts[index];
           }
       });
 
-      // Handle wheel event
-      element.addEventListener('wheel', (e) => {
-          if (!currentKey) return; // Do nothing if no key is pressed
+      // // Handle wheel event
+      // element.addEventListener('wheel', (e) => {
+      //     if (!currentKey) return; // Do nothing if no key is pressed
 
-          const delta = e.deltaY || e.deltaX;
-          e.preventDefault(); // Prevent the default scrolling behavior
+      //     const delta = e.deltaY || e.deltaX;
+      //     e.preventDefault(); // Prevent the default scrolling behavior
 
-          // Get current values
-          const computedStyle = window.getComputedStyle(element);
-          const currentPadding = parseInt(computedStyle.padding, 10);
-          const currentHeight = parseInt(computedStyle.height, 10);
-          const currentBorderRadius = parseInt(computedStyle.borderRadius, 10);
+      //     // Get current values
+      //     const computedStyle = window.getComputedStyle(element);
+      //     const currentPadding = parseInt(computedStyle.padding, 10);
+      //     const currentHeight = parseInt(computedStyle.height, 10);
+      //     const currentBorderRadius = parseInt(computedStyle.borderRadius, 10);
 
-          switch (currentKey) {
-              case 'p':
-                  // Adjust padding
-                  element.style.padding = `${currentPadding - delta}px`;
-                  console.log("zoom in padding: ", currentPadding + delta, " delta: ", delta);
-                  break;
-              case 'h':
-                  // Adjust height
-                  element.style.height = `${currentHeight - delta}px`;
-                  console.log("zoom in height: ", currentHeight + delta, " delta: ", delta);
-                  break;
-              case 's':
-                  // Adjust border-radius
-                  element.style.borderRadius = `${Math.max(currentBorderRadius - delta, 0)}px`;
-                  console.log("zoom in border-radius: ", currentBorderRadius + delta, " delta: ", delta);
-                  break;
-          }
-      });
+      //     switch (currentKey) {
+      //         case 'p':
+      //             // Adjust padding
+      //             element.style.padding = `${currentPadding - delta}px`;
+      //             console.log("zoom in padding: ", currentPadding + delta, " delta: ", delta);
+      //             break;
+      //         case 'h':
+      //             // Adjust height
+      //             element.style.height = `${currentHeight - delta}px`;
+      //             console.log("zoom in height: ", currentHeight + delta, " delta: ", delta);
+      //             break;
+      //         case 's':
+      //             // Adjust border-radius
+      //             element.style.borderRadius = `${Math.max(currentBorderRadius - delta, 0)}px`;
+      //             console.log("zoom in border-radius: ", currentBorderRadius + delta, " delta: ", delta);
+      //             break;
+      //     }
+      // });
 
 
 
@@ -1547,38 +1592,38 @@ let selectedFont = fonts[index];
       const codeContainer = document.getElementById('code-container');
       const cssCode = document.getElementById('css-code');
 
-      toggleCodeBtn.addEventListener('click', () => {
+//       toggleCodeBtn.addEventListener('click', () => {
 
 
-        // if (codeContainer.style.display === 'none') {
-        //   codeContainer.style.display = 'block';
-        //   toggleCodeBtn.textContent = 'Hide CSS Code';
-        //   updateCSSCode();
-        // } else {
-        //   codeContainer.style.display = 'none';
-        //   toggleCodeBtn.textContent = 'Show CSS Code';
-        // }
+//         // if (codeContainer.style.display === 'none') {
+//         //   codeContainer.style.display = 'block';
+//         //   toggleCodeBtn.textContent = 'Hide CSS Code';
+//         //   updateCSSCode();
+//         // } else {
+//         //   codeContainer.style.display = 'none';
+//         //   toggleCodeBtn.textContent = 'Show CSS Code';
+//         // }
 
 
-        function getExplicitStyles(element) {
-  const styles = {};
-  const computedStyles = window.getComputedStyle(element);
+//         function getExplicitStyles(element) {
+//   const styles = {};
+//   const computedStyles = window.getComputedStyle(element);
   
-  for (let i = 0; i < element.style.length; i++) {
-    const property = element.style[i];
-    styles[property] = computedStyles.getPropertyValue(property);
-  }
+//   for (let i = 0; i < element.style.length; i++) {
+//     const property = element.style[i];
+//     styles[property] = computedStyles.getPropertyValue(property);
+//   }
   
-  return styles;
-}
+//   return styles;
+// }
 
-const explicitStyles = getExplicitStyles(element);
-console.log("EX Style : ",explicitStyles);
-
-
+// const explicitStyles = getExplicitStyles(element);
+// console.log("EX Style : ",explicitStyles);
 
 
-      });
+
+
+//       });
 
       // Copy CSS code
       const copyCodeBtn = document.getElementById('copy-code');

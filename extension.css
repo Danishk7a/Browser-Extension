@@ -16,7 +16,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 }
-#stylep{
+#SelectedMenu{
     height: 380px;
     position: absolute;
     top: 0;
@@ -25,7 +25,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #171717;
     color:white;
-    /* z-index: 8; */
+    padding: 25px;
     font-size: 11px;
 }
 
@@ -98,6 +98,7 @@
         cursor: pointer;
     }
 
+
     #minimize{
 
         
@@ -118,6 +119,18 @@
         cursor: pointer;
     }
 
+    #setting{
+
+   font-size: 13px;
+  
+      color:#595959;
+   
+      position: absolute;
+      top: 10px;
+
+      right: 60px;
+      cursor: pointer;
+  }
     #displayArea{
         height: 50%;
         width: 100%;
@@ -199,7 +212,7 @@ background-color: tomato;
               input[type="range"] {
                 -webkit-appearance: none;
                 width: 100px;
-                height: 7px;
+                height: 4px;
                 border-radius: 5px;
                 margin: 10px 0;
               }
@@ -228,7 +241,7 @@ background-color: tomato;
               .color-overlay {
                 position: absolute;
                 right: 23px;
-                bottom: 32px;
+                bottom: 10px;
                 width: 20px;
                 height: 20px;
                 background-color: rgba(255, 0, 0, 0.3);
