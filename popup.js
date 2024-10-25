@@ -771,11 +771,11 @@ function showCopiedMessage() {
 // Event listener for the color picker button
 document.getElementById('colorPickerButton').addEventListener('click', activateColorPicker);
 
-// Event listener for the color display div
-document.getElementById('Display').addEventListener('click', function() {
-    const colorCode = this.textContent;
-    copyToClipboard(colorCode);
-});
+// // Event listener for the color display div
+// document.getElementById('Display').addEventListener('click', function() {
+//     const colorCode = this.textContent;
+//     copyToClipboard(colorCode);
+// });
 
 
 

@@ -16,7 +16,7 @@ Extension.style.backgroundColor = '#171717';
 Extension.style.height = '400px';
 Extension.style.width = '300px';
 Extension.style.zIndex = '99999999';
-Extension.style.cursor = 'move'; 
+// Extension.style.cursor = 'move'; 
 Extension.style.boxShadow = '1px 2px 10px 2px black'; 
 
 // Extension.style.padding = '20px'; 
@@ -635,6 +635,8 @@ colorPickerButton.style.backgroundColor = '#242424';
 colorPickerButton.style.cursor = 'pointer';
 colorPickerButton.style.borderRadius = '7px';
 colorPickerButton.classList.add('not-editable')
+colorPickerButton.addEventListener('click',(event) =>{
+  activateColorPicker(event)})
 themeandpickerBtn.appendChild(changeThemeButton)
 themeandpickerBtn.appendChild(colorPickerButton)
 
@@ -651,7 +653,86 @@ ExtensionBody.appendChild(container);
 
 
 
+// -----------------------------------------------------Color Picker ---------------------------------------------------------------
 
+let cursorPosition = { x: 0, y: 0 };
+
+// Function to update cursor position
+function updateCursorPosition(event) {
+  cursorPosition.x = event.clientX;
+  cursorPosition.y = event.clientY;
+}
+
+// Add event listener for mouse movement
+document.addEventListener('mousemove', updateCursorPosition);
+
+// Function to get current cursor position
+function getCursorLocation() {
+  return cursorPosition;
+}
+
+
+
+function activateColorPicker(event) {
+  if (!window.EyeDropper) {
+      console.error('EyeDropper API is not supported in this browser.');
+      return;
+  }
+
+  const eyeDropper = new EyeDropper();
+
+  eyeDropper.open().then(result => {
+      const selectedColor = result.sRGBHex;
+      console.log('Selected color:', selectedColor);
+      
+      updateColorUI(selectedColor);
+      copyToClipboard(selectedColor,event);
+      
+  }).catch(error => {
+      console.error('EyeDropper failed:', error);
+  });
+}
+
+function updateColorUI(color) {
+  const colorDisplay = document.getElementById('Display');
+  if (colorDisplay) {
+      colorDisplay.style.backgroundColor = color;
+      colorDisplay.textContent = color;
+  }
+}
+
+function copyToClipboard(text,event) {
+  navigator.clipboard.writeText(text).then(() => {
+      console.log('Color code copied to clipboard:', text);
+      // Optionally, show a temporary message to the user
+      showCopiedMessage(event);
+  }).catch(err => {
+      console.error('Failed to copy color code: ', err);
+  });
+}
+
+function showCopiedMessage(event) {
+    const { x, y } = getCursorLocation();
+
+  const message = document.createElement('div');
+  message.textContent = 'Color copied!';
+  message.style.position = 'fixed';
+  message.style.top = `${y}px`; // Vertical position of the cursor
+  message.style.left = `${x + 20}px`;
+  message.style.backgroundColor = 'rgba(0,0,0,0.7)';
+  message.style.color = 'white';
+  message.style.padding = '10px';
+  message.style.borderRadius = '5px';
+  document.body.appendChild(message);
+
+  setTimeout(() => {
+      document.body.removeChild(message);
+  }, 2000);
+}
+
+
+
+// -----------------------------------------------------Color Picker ---------------------------------------------------------------
 
 
 
@@ -801,7 +882,6 @@ if (Object.values(lockedColorInfo).some(value => value === true)) {
   
     elements.forEach(el => {
       if (el.classList.contains('not-editable')) {
-        console.log('skipping')
         return;
     }else{
             
@@ -811,7 +891,7 @@ if (Object.values(lockedColorInfo).some(value => value === true)) {
         let color = getComputedStyle(el).color;
        
         // let color = getComputedStyle(el).color;
-
+        el.style.color =getContrastYIQ(bgColor)
         // const style = ['italic', 'normal', 'bold']
         // const randomIndex = Math.floor(Math.random() * style.length);
 
@@ -864,6 +944,8 @@ if (Object.values(lockedColorInfo).some(value => value === true)) {
                 if(localStorage.getItem('applyPalatte')=== 'true'){
                 el.style.backgroundColor = newColor;
                 el.style.color =getContrastYIQ(newColor)}
+
+
          
         
                 // if(colorIndex<5){
@@ -882,6 +964,11 @@ if (Object.values(lockedColorInfo).some(value => value === true)) {
 DisplayPalatte(currentPalatte);
     
   }
+
+
+
+
+
 
   function appendMenuAfterSelectandClick() {
     console.log("Creating SelectedMenu and Xcross");
@@ -905,38 +992,196 @@ DisplayPalatte(currentPalatte);
     Xcross.style.cursor = 'pointer';
     Xcross.style.backgroundColor = '#313030';
 
+   if(selectedElement.tagName !== 'IMG'){
+    const backgroundColorBOx = document.createElement('div');
+    const backgroundColorLabel = document.createElement('div');
+    backgroundColorLabel.innerText = 'Background'
+      backgroundColorBOx.appendChild(backgroundColorLabel)
+
+
       // Create color input fields
       const colorInput1 = document.createElement('input');
       colorInput1.type = 'color';
-      colorInput1.value = '#ff7e5f'; // Default color
+      // colorInput1.value ='notset' 
       colorInput1.classList.add('not-selectable')
-      colorInput1.addEventListener('input', updateGradient);
+
   
       const colorInput2 = document.createElement('input');
       colorInput2.type = 'color';
-      colorInput2.value = '#feb47b'; // Default color
+      // colorInput2.value ='notset' 
       colorInput2.classList.add('not-selectable')
-      colorInput2.addEventListener('input', updateGradient);
+
+
+
+
+      // Create color input fields
+      const colorInput3 = document.createElement('input');
+      colorInput3.type = 'color';
+      colorInput3.classList.add('not-selectable')
+
+  
+      const colorInput4 = document.createElement('input');
+      colorInput4.type = 'color';
+      colorInput4.classList.add('not-selectable')
+   
+
+      colorInput1.addEventListener('input', updateGradient);
+         colorInput2.addEventListener('input', updateGradient);
+           colorInput3.addEventListener('input', updateTextGradient);
+         colorInput4.addEventListener('input', updateTextGradient);
+
+
+
 
  // Append color inputs to SelectedMenu
- SelectedMenu.appendChild(colorInput1);
- SelectedMenu.appendChild(colorInput2);  
+ backgroundColorBOx.appendChild(colorInput1);
+ backgroundColorBOx.appendChild(colorInput2);  
+ backgroundColorBOx.appendChild(colorInput3);  
+ backgroundColorBOx.appendChild(colorInput4);  
 
+ SelectedMenu.appendChild(backgroundColorBOx)
+
+
+function rgbToHex(rgb) {
+    const result = rgb.match(/\d+/g).map(x => {
+        const hex = parseInt(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex; // Ensure two digits
+    });
+    return `#${result.join('')}`;
+}
 
 
  function updateGradient() {
-  const color1 = colorInput1.value;
+const color1 = colorInput1.value;
   const color2 = colorInput2.value;
   selectedElement.style.background = `linear-gradient(to right, ${color1}, ${color2})`;
+
 }
 
-// Initial gradient application
-updateGradient();
+
+
+ function updateTextGradient() {
+const color3 = colorInput3.value;
+  const color4 = colorInput4.value;
+  selectedElement.style.background = `linear-gradient(to right, ${color3}, ${color4})`;
+  selectedElement.style.webkitBackgroundClip = 'text'; // For WebKit browsers
+selectedElement.style.backgroundClip = 'text'; // Standard property
+selectedElement.style.webkitTextFillColor = 'transparent';
+ 
+}
 
 
 
 
 
+
+
+   }else{
+
+    const SelectedIMG = document.createElement('img');
+   const colorsDiv =  document.createElement('div');
+   colorsDiv.id  = 'showExtractedcolors'
+   colorsDiv.style.height = '200px'
+   colorsDiv.style.width = '100%'
+   colorsDiv.style.display = 'flex';
+   colorsDiv.style.alignItems = 'center';
+   colorsDiv.style.gap = '20px';
+   colorsDiv.style.flexWrap = 'wrap';
+
+    SelectedIMG.src = selectedElement.src;
+    SelectedIMG.style.width = '100px';
+    SelectedIMG.style.height = '100px';
+    SelectedMenu.appendChild(SelectedIMG)
+    SelectedMenu.appendChild(colorsDiv)
+
+    extractDistinctColors(selectedElement)
+
+    // ------------------------------------------------------Extract Img Color ----------------------------------------------------------
+    function extractDistinctColors(img) {
+      const canvas = document.createElement('canvas');
+  
+      const ctx = canvas.getContext('2d');
+
+      // Set canvas size to image size
+      canvas.width = img.width;
+      canvas.height = img.height;
+
+      
+
+      // Draw the image on canvas
+      ctx.drawImage(img, 0, 0);
+
+      // Get pixel data
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      const colorMap = {};
+
+      // Loop through pixel data
+      for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];     // Red
+          const g = data[i + 1]; // Green
+          const b = data[i + 2]; // Blue
+
+          // Create a color key
+          const colorKey = `${r},${g},${b}`;
+          
+          // Combine colors with similar shades (tolerance)
+          let found = false;
+          for (const key in colorMap) {
+              if (isSimilar(colorKey, key)) {
+                  colorMap[key] += 1; // Increment count of similar color
+                  found = true;
+                  break;
+              }
+          }
+
+          if (!found) {
+              colorMap[colorKey] = 1; // Add new color
+          }
+      }
+
+      // Sort colors by frequency and get the top 5 distinct colors
+      const sortedColors = Object.entries(colorMap)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 5);
+
+      displayColors(sortedColors);
+  }
+
+    function isSimilar(color1, color2) {
+      const [r1, g1, b1] = color1.split(',').map(Number);
+      const [r2, g2, b2] = color2.split(',').map(Number);
+      const tolerance = 50; // Define the tolerance for color similarity
+
+      return (
+          Math.abs(r1 - r2) < tolerance &&
+          Math.abs(g1 - g2) < tolerance &&
+          Math.abs(b1 - b2) < tolerance
+      );
+  }
+
+    function displayColors(colors) {
+    
+      colorsDiv.innerHTML = ''; // Clear previous colors
+
+      colors.forEach(([colorKey, count]) => {
+          const [r, g, b] = colorKey.split(',').map(Number);
+          const colorDiv = document.createElement('div');
+          colorDiv.className = 'color-box';
+          colorDiv.style.padding= '30px'
+          colorDiv.style.height= '50px'
+          colorDiv.style.width= '50px'
+          colorDiv.style.borderRadius= '11px'
+
+          colorDiv.style.backgroundColor = `rgb(${r},${g},${b})`;
+          // colorDiv.textContent = `rgb(${r},${g},${b}): ${count}`;
+          colorsDiv.appendChild(colorDiv);
+      });
+  }
+
+    // ------------------------------------------------------Extract Img Color ----------------------------------------------------------
+
+   }
 
 
     // Add visible content to Xcross
@@ -986,8 +1231,6 @@ updateGradient();
     console.log("Created SelectedMenu with Xcross:", SelectedMenu);
 }
 
-// Call the function to test
-// appendMenuAfterSelectandClick();
 
 
 
@@ -1001,42 +1244,35 @@ updateGradient();
 
    // Select all elements on the page
    const allElements = document.querySelectorAll('*');
+
+function handleMouseEnter(event) {
+    // Stop event from bubbling up to parent elements
+    event.stopPropagation();
     
-   function handleMouseEnter(event) {
-       if (!event.target.classList.contains('not-selectable')) {
-           event.target.style.outline = '2px solid blue'; // Add outline to the hovered element
-       }
-   }
+    if (!event.target.classList.contains('not-selectable')) {
+        event.target.style.outline = '2px solid blue';
+    }
+}
 
-   function handleMouseLeave(event) {
-       if (!event.target.classList.contains('not-selectable')) {
-           event.target.style.outline = 'none'; // Remove the outline when not hovering
-       }
-   }
+function handleMouseLeave(event) {
+    // Stop event from bubbling up to parent elements
+    event.stopPropagation();
+    
+    if (!event.target.classList.contains('not-selectable')) {
+        event.target.style.outline = 'none';
+    }
+}
 
-   allElements.forEach(element => {
-       element.addEventListener('mouseenter', handleMouseEnter);
-       element.addEventListener('mouseleave', handleMouseLeave);
-   });
-
+allElements.forEach(element => {
+    element.addEventListener('mouseenter', handleMouseEnter);
+    element.addEventListener('mouseleave', handleMouseLeave);
+});
   
   
     window.domEditModeInjected = true;
     let editMode = false;
 
   
-    // const style = document.createElement('style');
-    // // style.classList.add('resizable')
-    // style.textContent = `
-    //   .extension-selected-outline {
-    //     outline: 2px solid #0066ff;
-    //     outline-offset: -2px;
-    //   }
-      
-     
-    
-    // `;
-    // document.head.appendChild(style);
   
     window.toggleEditMode = function() {
       editMode = !editMode;
@@ -1063,9 +1299,6 @@ updateGradient();
         removeEditUI(selectedElement);
       }
       selectedElement = null;
-      removeToggleButton();
-      hideSidemenu();
-      console.log('Edit mode disabled');
     }
 
 
@@ -1075,7 +1308,8 @@ updateGradient();
       if (!editMode) return;
 
       // Ignore clicks on the sidemenu and its contents
-      if (event.target.closest('#extension-sidemenu')) {
+      // if (event.target.closest('#extension-sidemenu')) {
+      if (event.target.classList.contains('not-selectable')) {
         return;
       }
 
@@ -1130,37 +1364,14 @@ updateGradient();
       // element.classList.add('resizable')
       element.style.position = 'relative';
 
-      // if (element.textContent.trim() !== '') {
-      //   element.addEventListener('dblclick', () => {
-      //     element.contentEditable = 'true'; 
-      //     element.focus();
-      //   });
-      // }
-
+  
       // ------------------------------------------------------------------Append in Extension -----------------------------------------
     
       appendMenuAfterSelectandClick()
-    
-       
-      // const menuTrigger = document.createElement('div');
-      // menuTrigger.className = 'extension-menu-trigger';
       disableDefaults();
 
    
-      
-      // element.appendChild(menuTrigger);
-      // element.appendChild(handle)
 
-
-      // menuTrigger.addEventListener('click', (e) => {
-      //   e.stopPropagation();
-      //   showSidemenu(element);
-      // });
-
-      // makeDraggable(element);
-        // makeResizableAndDraggable(element, handle);
-
-      // Show sidemenu immediately when an element is selected
       setTimeout(() => showSidemenu(element), 0);
     }
 
@@ -1345,7 +1556,7 @@ let selectedFont = fonts[index];
       if (element && element.parentNode) {
         element.parentNode.removeChild(element);
         selectedElement = null;
-        hideSidemenu();
+   
       }
     }
   
@@ -1384,254 +1595,24 @@ let selectedFont = fonts[index];
     }
   
     function addToggleButton() {
-      const toggleButton = document.createElement('button');
-      toggleButton.id = 'extension-toggle-button';
-      toggleButton.textContent = 'Toggle Edit Mode';
-      toggleButton.addEventListener('click', toggleEditMode);
-      document.body.appendChild(toggleButton);
+    
     }
   
     function removeToggleButton() {
-      const toggleButton = document.getElementById('extension-toggle-button');
-      if (toggleButton) toggleButton.remove();
+
     }
   
     function showSidemenu(element) {
-      console.log('Showing sidemenu for element:', element);
-      hideSidemenu(); // Remove existing sidemenu if any
-
-      const sidemenu = document.createElement('div');
-      sidemenu.id = 'extension-sidemenu';
-      sidemenu.className = 'extension-ui'; 
-      sidemenu.classList.add('not-editable')// Add this class for identification
-    //   sidemenu.style.cssText = `
-    //     position: fixed;
-    //     top: 20px;
-    //     right: 20px;
-    //     width: 250px;
-    //     background-color: white;
-    //      margin: 0;
-    // padding: 0;
-    // /* box-sizing: border-box; */
-    // font-family: segoe ui;
-    //     border: 1px solid #ccc;
-    //     overflow:scroll;
-    //     padding: 10px;
-    //     z-index: 2147483647;
-    //     font-size:11px;
-    //     box-shadow: 0 0 10px rgba(0,0,0,0.1);`;
-
-    //     sidemenu.innerHTML = `<div className="not-editable">
-    //     <div id="style-tab" class="tab-content active">
-    //         <label>Background Color:
-    //           <input type="color" id="bgcolor-picker">
-    //         </label>
-    //         <label>Text Color:
-    //           <input  style="background-color: white;" type="color" id="color-picker">
-    //         </label>
-    //         <label>Gradient:
-    //           <input style="background-color: white;"  type="text" id="gradient-input" placeholder="linear-gradient(...)">
-    //         </label>
-    //         <label>Border:
-    //           <input style="background-color: white;"  type="text" id="border-input" placeholder="1px solid black">
-    //         </label>
-    //         <label>Border Radius:
-    //           <input  type="range" id="border-radius-slider" min="0" max="50" value="0">
-    //           <input style="background-color: white;"  type="text" id="border-radius-input" placeholder="10px or 50%">
-    //         </label>
-    //         <label>Box Shadow:
-             
-    //           <input type="range" id="box-shadow-inputs" min="0" max="100" value="100">
-    //         </label>
-    //       </div>
-          
-    //       <div id="layout-tab" class="tab-content">
-    //        <input style="display: none;"  type="file" id="fileInput" accept="image/*" />
-           
-           
-
-    
-         
-    
-    
-    //       </div>
-          
-    //       <div class="code-section">
-    //         <button id="toggle-code">Show CSS Code</button>
-    //         <div id="code-container" style="display: none;">
-    //           <pre id="css-code"></pre>
-    //           <button id="copy-code">Copy CSS</button>
-    //         </div>
-    //       </div>
-    // </div>`;
-    
-   
-      document.body.appendChild(sidemenu);
-      console.log('Sidemenu appended to body');
-
-      // Force a reflow to ensure the sidemenu is rendered
-      sidemenu.offsetHeight;
-
-      // Make sure the sidemenu is visible
-      sidemenu.style.display = 'block';
-
-      // Prevent sidemenu interactions from triggering element selection
-
-      sidemenu.addEventListener('mousedown', (e) => e.stopPropagation());
-      sidemenu.addEventListener('click', (e) => e.stopPropagation());
-
-      // Add event listeners to sidemenu inputs and buttons
-      const inputs = sidemenu.querySelectorAll('input, select, button');
-      inputs.forEach(input => {
-        input.addEventListener('mousedown', (e) => e.stopPropagation());
-        input.addEventListener('click', (e) => e.stopPropagation());
-      });
-
-      // Tab functionality
-      const tabButtons = sidemenu.querySelectorAll('.tab-buttons button');
-      const tabContents = sidemenu.querySelectorAll('.tab-content');
-
-      tabButtons.forEach(button => {
-        button.addEventListener('click', () => {
-          tabButtons.forEach(btn => btn.classList.remove('active'));
-          tabContents.forEach(content => content.classList.remove('active'));
-          button.classList.add('active');
-          sidemenu.querySelector(`#${button.dataset.tab}-tab`).classList.add('active');
-        });
-      });
-
-      // Style tab event listeners
-      // document.getElementById('bgcolor-picker').addEventListener('input', (e) => {
-      //   element.style.backgroundColor = e.target.value;
-      // });
-
-      // document.getElementById('color-picker').addEventListener('input', (e) => {
-      //   element.style.color = e.target.value;
-      // });
-
-      // document.getElementById('gradient-input').addEventListener('input', (e) => {
-      //   element.style.backgroundImage = e.target.value;
-      // });
-
-      // document.getElementById('border-input').addEventListener('input', (e) => {
-      //   element.style.border = e.target.value;
-      // });
-
-      // document.getElementById('box-shadow-inputs').addEventListener('input', (e) => {
-      //   // element.style.boxShadow = e.target.value;
-
-      //   element.style.filter = `drop-shadow(30px 10px ${e.target.value}px #242424)`
-      
-      // });
-
-    //   document.getElementById('fileInput').addEventListener('change', function(event) {
-    //     const file = event.target.files[0];
-    //     if (file) {
-    //         const reader = new FileReader();
-    //         reader.onload = function(e) {
-    //             element.src = e.target.result;
-    //         };
-    //         reader.readAsDataURL(file);
-    //     }
-    // });
      
+ 
 
 
-      let currentKey = null;
 
-      // Handle keydown event
-      document.addEventListener('keydown', (e) => {
-          if (['p', 'h', 's'].includes(e.key)) {
-              currentKey = e.key;
-          }
-      });
 
-      // Handle keyup event
-      document.addEventListener('keyup', (e) => {
-          if (['p', 'h', 's'].includes(e.key)) {
-              currentKey = null;
-          }
-      });
-
-      // // Handle wheel event
-      // element.addEventListener('wheel', (e) => {
-      //     if (!currentKey) return; // Do nothing if no key is pressed
-
-      //     const delta = e.deltaY || e.deltaX;
-      //     e.preventDefault(); // Prevent the default scrolling behavior
-
-      //     // Get current values
-      //     const computedStyle = window.getComputedStyle(element);
-      //     const currentPadding = parseInt(computedStyle.padding, 10);
-      //     const currentHeight = parseInt(computedStyle.height, 10);
-      //     const currentBorderRadius = parseInt(computedStyle.borderRadius, 10);
-
-      //     switch (currentKey) {
-      //         case 'p':
-      //             // Adjust padding
-      //             element.style.padding = `${currentPadding - delta}px`;
-      //             console.log("zoom in padding: ", currentPadding + delta, " delta: ", delta);
-      //             break;
-      //         case 'h':
-      //             // Adjust height
-      //             element.style.height = `${currentHeight - delta}px`;
-      //             console.log("zoom in height: ", currentHeight + delta, " delta: ", delta);
-      //             break;
-      //         case 's':
-      //             // Adjust border-radius
-      //             element.style.borderRadius = `${Math.max(currentBorderRadius - delta, 0)}px`;
-      //             console.log("zoom in border-radius: ", currentBorderRadius + delta, " delta: ", delta);
-      //             break;
-      //     }
+      //   navigator.clipboard.writeText(cssCode.textContent).then(() => {
+      //     alert('CSS code copied to clipboard!');
+      //   });
       // });
-
-
-
-      // Toggle code section
-      const toggleCodeBtn = document.getElementById('toggle-code');
-      const codeContainer = document.getElementById('code-container');
-      const cssCode = document.getElementById('css-code');
-
-//       toggleCodeBtn.addEventListener('click', () => {
-
-
-//         // if (codeContainer.style.display === 'none') {
-//         //   codeContainer.style.display = 'block';
-//         //   toggleCodeBtn.textContent = 'Hide CSS Code';
-//         //   updateCSSCode();
-//         // } else {
-//         //   codeContainer.style.display = 'none';
-//         //   toggleCodeBtn.textContent = 'Show CSS Code';
-//         // }
-
-
-//         function getExplicitStyles(element) {
-//   const styles = {};
-//   const computedStyles = window.getComputedStyle(element);
-  
-//   for (let i = 0; i < element.style.length; i++) {
-//     const property = element.style[i];
-//     styles[property] = computedStyles.getPropertyValue(property);
-//   }
-  
-//   return styles;
-// }
-
-// const explicitStyles = getExplicitStyles(element);
-// console.log("EX Style : ",explicitStyles);
-
-
-
-
-//       });
-
-      // Copy CSS code
-      const copyCodeBtn = document.getElementById('copy-code');
-      copyCodeBtn.addEventListener('click', () => {
-        navigator.clipboard.writeText(cssCode.textContent).then(() => {
-          alert('CSS code copied to clipboard!');
-        });
-      });
 
       // Function to update CSS code
       function updateCSSCode() {
@@ -1646,43 +1627,15 @@ let selectedFont = fonts[index];
           .join('\n');
       }
 
-      // Update CSS code when any style changes
-      sidemenu.addEventListener('input', updateCSSCode);
-      sidemenu.addEventListener('change', updateCSSCode);
 
-      // New event listeners for sliders and inputs
-      ['width', 'height', 'padding', 'border-radius'].forEach(prop => {
-        const slider = document.getElementById(`${prop}-slider`);
-        const input = document.getElementById(`${prop}-input`);
+   
 
-        slider.addEventListener('input', (e) => {
-          const value = e.target.value + (prop === 'padding' || prop === 'border-radius' ? 'px' : '%');
-          input.value = value;
-          element.style[prop] = value;
-          updateCSSCode();
-        });
-
-        input.addEventListener('input', (e) => {
-          element.style[prop] = e.target.value;
-          updateCSSCode();
-          // Update slider if a percentage or pixel value is entered
-          const numValue = parseInt(e.target.value);
-          if (!isNaN(numValue) && numValue >= 0 && numValue <= slider.max) {
-            slider.value = numValue;
-          }
-        });
-      });
-
-      console.log('Sidemenu setup complete');
     }
   
-    function hideSidemenu() {
-      const sidemenu = document.getElementById('extension-sidemenu');
-      if (sidemenu) {
-        console.log('Removing existing sidemenu');
-        sidemenu.remove();
-      }
-    }
+    
+
+
+
   
     toggleEditMode(); // Enable edit mode immediately when injected
   }
