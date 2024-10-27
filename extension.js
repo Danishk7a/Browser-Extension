@@ -70,7 +70,10 @@ style.textContent = `
 
 }
 #SelectedMenu{
-    height: 380px;
+    height: 340px;
+    margin-top:40px;
+    box-sizing:border-box;
+    padding:20px;
     position: absolute;
     top: 0;
     left: 0;
@@ -78,7 +81,7 @@ style.textContent = `
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #171717;
     color:white;
-    padding: 25px;
+  
     font-size: 11px;
 }
 
@@ -692,14 +695,13 @@ function DisplayPalatte(arr){
       colorPickerDiv.appendChild(controlsDiv);
       colorPickerWindowsAb.appendChild(colorPickerDiv);
       displayArea.appendChild(colorPickerWindowsAb);
+
+      colorPickerDiv.addEventListener('mouseleave', () => {
+   colorPickerWindowsAb.style.display = 'none'
+    });
   
   
-      colorPickerWindowsAb.addEventListener('click', ()=>{
 
-
-        colorPickerWindowsAb.style.display = 'none'
-
-      })
 
       colorPickerDiv.addEventListener('click', function(event) {
         event.stopPropagation(); // Prevents the click event from bubbling up to the parent
@@ -1410,6 +1412,9 @@ DisplayPalatte(currentPalatte);
     Xcross.classList.add('not-selectable');
     Xcross.style.cursor = 'pointer';
     Xcross.style.backgroundColor = '#313030';
+    Xcross.style.marginBottom = '40px'
+
+    SelectedMenu.appendChild(Xcross);
 
    if(selectedElement.tagName !== 'IMG'){
     const backgroundColorBOx = document.createElement('div');
@@ -1628,7 +1633,7 @@ selectedElement.style.webkitTextFillColor = 'transparent';
     });
 
     // Append Xcross to SelectedMenu
-    SelectedMenu.appendChild(Xcross);
+  
     
     // Check if extensionBody exists
     const extensionBody = shadowRoot.getElementById('extensionBody');
@@ -1662,14 +1667,32 @@ selectedElement.style.webkitTextFillColor = 'transparent';
     }
 
    // Select all elements on the page
-   const allElements = document.querySelectorAll('*');
+// Keep track of currently outlined element
+let currentOutlinedElement = null;
+
+// Function to remove outline from all elements
+function removeAllOutlines() {
+    const elements = document.querySelectorAll('*');
+    elements.forEach(el => {
+        el.style.outline = 'none';
+    });
+}
 
 function handleMouseEnter(event) {
     // Stop event from bubbling up to parent elements
     event.stopPropagation();
     
+    // Remove outline from previous element
+    if (currentOutlinedElement) {
+        currentOutlinedElement.style.outline = 'none';
+    }
+    
+    // Only add outline if element doesn't have 'not-selectable' class
     if (!event.target.classList.contains('not-selectable')) {
-        event.target.style.outline = '2px solid blue';
+        // Store current element
+        currentOutlinedElement = event.target;
+        // Add outline to current element
+        currentOutlinedElement.style.outline = '2px solid blue';
     }
 }
 
@@ -1677,16 +1700,30 @@ function handleMouseLeave(event) {
     // Stop event from bubbling up to parent elements
     event.stopPropagation();
     
-    if (!event.target.classList.contains('not-selectable')) {
+    // Only remove outline if this is the currently outlined element
+    if (event.target === currentOutlinedElement) {
         event.target.style.outline = 'none';
+        currentOutlinedElement = null;
     }
 }
 
+// Clean up any existing outlines before setting up new handlers
+removeAllOutlines();
+
+// Add event listeners to all elements
+const allElements = document.querySelectorAll('*');
 allElements.forEach(element => {
     element.addEventListener('mouseenter', handleMouseEnter);
     element.addEventListener('mouseleave', handleMouseLeave);
 });
-  
+
+// Optional: Clean up function if you need to remove the handlers later
+function removeOutlineHandlers() {
+    allElements.forEach(element => {
+        element.removeEventListener('mouseenter', handleMouseEnter);
+        element.removeEventListener('mouseleave', handleMouseLeave);
+    });
+}
   
     window.domEditModeInjected = true;
     let editMode = false;
@@ -1707,7 +1744,7 @@ allElements.forEach(element => {
       document.body.addEventListener('click', handleElementClick, true);
       document.addEventListener('keydown', handleKeyDown);
       addToggleButton();
-      console.log('Edit mode enabled');
+
     }
   
     function disableEditMode() {
@@ -1728,8 +1765,20 @@ allElements.forEach(element => {
 
       // Ignore clicks on the sidemenu and its contents
       // if (event.target.closest('#extension-sidemenu')) {
-      if (event.target.classList.contains('not-selectable')) {
-        return;
+      // if (event.target.classList.contains('not-selectable')) {
+      //   console.log("Return Here")
+      //   return;
+       
+      // }
+
+      const path = event.composedPath();
+    
+      // Check each element in the event path
+      for (const element of path) {
+          if (element.classList && element.classList.contains('not-selectable')) {
+              console.log("Return Here");
+              return; // Exit if a not-selectable element is found
+          }
       }
 
       event.preventDefault();
@@ -1782,6 +1831,7 @@ allElements.forEach(element => {
       // element.classList.add('extension-selected-outline');
       // element.classList.add('resizable')
       element.style.position = 'relative';
+      element.style.outline = '2px solid blue';
 
   
       // ------------------------------------------------------------------Append in Extension -----------------------------------------
@@ -1799,7 +1849,7 @@ allElements.forEach(element => {
 
   
     function removeEditUI(element) {
-      element.classList.remove('extension-selected-outline');
+      element.style.outline = 'none';
       element.classList.remove('resizable');
       element.querySelectorAll('.extension-menu-trigger').forEach(el => el.remove());
       // const handle = element.querySelector('#handle');
@@ -1846,21 +1896,20 @@ allElements.forEach(element => {
           const color = parseColor(text);
           if (color) {
             selectedElement.style.backgroundColor = color;
-            updateCSSCode();
+
           } else {
             console.log('Invalid color format in clipboard');
           }
         });
       } else if (event.altKey && event.key === 'q') {
         selectedElement.style.color = getRandomColor();
-        updateCSSCode();
       } 
       if (event.altKey && event.key === 'c') {
         navigator.clipboard.readText().then(text => {
           const color = parseColor(text);
           if (color) {
             selectedElement.style.color = color;
-            updateCSSCode();
+          
           } else {
             console.log('Invalid color format in clipboard');
           }
@@ -1874,7 +1923,7 @@ allElements.forEach(element => {
             const image = text;
             if (image) {
               selectedElement.src = text;
-              updateCSSCode();
+    
             } else {
               console.log('Invalid IMG');
             }
@@ -1926,7 +1975,6 @@ allElements.forEach(element => {
           event.preventDefault();
 
           selectedElement.style.backgroundColor = getRandomColor();
-          updateCSSCode();
 
         }
       
@@ -1935,7 +1983,6 @@ allElements.forEach(element => {
         event.preventDefault();
 
           selectedElement.style.background = 'transparent';
-          updateCSSCode();
 
 
       }else if(event.key === 'm'){
@@ -1949,12 +1996,11 @@ const fonts = [
 let index = Math.floor(Math.random() * fonts.length);
 let selectedFont = fonts[index];
         selectedElement.style.fontFamily =selectedFont   ;
-        updateCSSCode();
 
 
       }else if(event.key === 'n'){
         selectedElement.style.color = getRandomColor();
-        updateCSSCode();
+
 
 
       }
