@@ -480,7 +480,8 @@ function WebsiteThemeColor() {
 
     websitePalatte =  rgbStringToHex(websitePalatte)
   console.log('Website Colors : ', websitePalatte)
-  currentPalatte = websitePalatte
+  currentPalatte = websitePalatte.slice(0, 5)
+ 
   
 }
 
@@ -710,12 +711,12 @@ function DisplayPalatte(arr){
 
       transparency.addEventListener('input', (e)=>{
         e.preventDefault()
-          div.style.backgroundColor = `${arr[i]}${e.target.value}`;
-          console.log("op : ", `${arr[i]}${e.target.value}`)
-          if(e.target.value >= 100){
-            div.style.backgroundColor = `${arr[i]}`;
+        const alphaValue = (e.target.value / 100) * 255; // Convert to 0-255 range
+        const alphaHex = Math.round(alphaValue).toString(16).padStart(2, '0'); // Convert to hex and pad
+        const hexColor = arr[i]; 
+        div.style.backgroundColor = `${hexColor}${alphaHex}`;
 
-          }
+
 
 
           hexInput.focus()
@@ -1240,7 +1241,6 @@ function updateColors(currentPalatte, lockedColorInfo) {
 
 async function changeTheme() {
   
-  console.log("This is Current Plaaete Status  : ",  currentPalatte)
   
     let indexx = Math.floor(Math.random() * 100);
 
@@ -1266,12 +1266,29 @@ if (Object.values(lockedColorInfo).some(value => value === true)) {
 
 }
 
+let elements = document.querySelectorAll('*');
+
+// ---------------------------------------------------------------Only For Canva ------------------------------------------------
+
+if(window.location.href.includes('canva.com')){
+
+  elements.forEach(element => {
+    if (!(element.style.transform)) {
+        element.classList.add('not-editable');
+    }
+  });
+}
 
 
+// ---------------------------------------------------------------Only For Canva ------------------------------------------------
 
 
     let colorMap = {};  // Map to store original color -> new color mapping
-    let elements = document.querySelectorAll('*');
+   
+ 
+
+
+
     let colorIndex = 0; // To keep track of which color from the palette to use
 
     // Function to generate a random gradient using the color palette

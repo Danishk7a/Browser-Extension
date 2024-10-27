@@ -3,77 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Cryptocurrency Prices</title>
+    <title>Alpha Slider with Hex Color</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333;
-            margin: 0;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: auto;
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            text-align: center;
-        }
-
-        .crypto-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-        }
-
-        .crypto-item:last-child {
-            border-bottom: none;
-        }
-
-        button {
-            padding: 5px 10px;
-            cursor: pointer;
+        #colorDisplay {
+            width: 300px;
+            height: 200px;
+            background-color: #ff0000; /* Default red in hex */
+            border: 1px solid #000;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Real-Time Cryptocurrency Prices</h1>
-        <div id="crypto-list"></div>
-    </div>
+
+    <div id="colorDisplay"></div>
+    <input type="range" id="alphaSlider" min="0" max="100" value="100">
+
     <script>
-        async function fetchCryptoPrices() {
-            const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd');
-            const data = await response.json();
-            const cryptoList = document.getElementById('crypto-list');
+        const colorDisplay = document.getElementById('colorDisplay');
+        const alphaSlider = document.getElementById('alphaSlider');
 
-            data.forEach(crypto => {
-                const cryptoItem = document.createElement('div');
-                cryptoItem.className = 'crypto-item';
-
-                cryptoItem.innerHTML = `
-                    <span>${crypto.name} (${crypto.symbol.toUpperCase()})</span>
-                    <span>$${crypto.current_price.toFixed(2)}</span>
-                    <button onclick="openChart('${crypto.id}')">View Chart</button>
-                `;
-
-                cryptoList.appendChild(cryptoItem);
-            });
+        // Function to convert hex to RGBA
+        function hexToRgba(hex, alpha) {
+            // Remove the '#' if present
+            hex = hex.replace(/^#/, '');
+            // Parse the hex values
+            const r = parseInt(hex.substring(0, 2), 16);
+            const g = parseInt(hex.substring(2, 4), 16);
+            const b = parseInt(hex.substring(4, 6), 16);
+            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
         }
 
-        function openChart(cryptoId) {
-            const url = `https://www.tradingview.com/chart/?symbol=COINBASE:${cryptoId.toUpperCase()}`;
-            window.open(url, '_blank');
-        }
-
-        fetchCryptoPrices();
+        alphaSlider.addEventListener('input', function() {
+            const alphaValue = alphaSlider.value / 100; // Convert to 0-1 range
+            colorDisplay.style.backgroundColor = hexToRgba('#ff0000', alphaValue); // Use the hex color
+        });
     </script>
+
 </body>
 </html>
