@@ -3,42 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alpha Slider with Hex Color</title>
+    <title>Video Text Masking</title>
     <style>
-        #colorDisplay {
-            width: 300px;
-            height: 200px;
-            background-color: #ff0000; /* Default red in hex */
-            border: 1px solid #000;
-            margin-bottom: 20px;
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #000; /* Background color for contrast */
+            overflow: hidden;
+        }
+
+        .container {
+            position: relative;
+           width: 100%;
+           height: 100vh;
+        }
+
+        .container video{
+            width: 100%;
+            height: 100vh;
+            
+        }
+        
+        .textbox{
+            position: absolute;
+            background-color: #000;
+            height: 100%;
+            width: 100%;
+            color: azure;
+            top: 0;
+            left: 0;
+            display: flex;
+            color: #FFFFFF;
+	/* display: inline; */
+	font-family: MR-Camphor, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 110px;
+	font-weight: 700;
+	letter-spacing: -3.3px;
+	line-height: 110px;
+
+            justify-content: center;
+            align-items: center;
+            mix-blend-mode: multiply;
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        
+        <video class="video" autoplay muted loop>
+            <source src="x.mp4" type="video/mp4">  </video>
 
-    <div id="colorDisplay"></div>
-    <input type="range" id="alphaSlider" min="0" max="100" value="100">
+            <div class="textbox">
+                <h1>ReThink</h1>
+            </div>
 
-    <script>
-        const colorDisplay = document.getElementById('colorDisplay');
-        const alphaSlider = document.getElementById('alphaSlider');
-
-        // Function to convert hex to RGBA
-        function hexToRgba(hex, alpha) {
-            // Remove the '#' if present
-            hex = hex.replace(/^#/, '');
-            // Parse the hex values
-            const r = parseInt(hex.substring(0, 2), 16);
-            const g = parseInt(hex.substring(2, 4), 16);
-            const b = parseInt(hex.substring(4, 6), 16);
-            return `rgba(${r}, ${g}, ${b}, ${alpha})`;
-        }
-
-        alphaSlider.addEventListener('input', function() {
-            const alphaValue = alphaSlider.value / 100; // Convert to 0-1 range
-            colorDisplay.style.backgroundColor = hexToRgba('#ff0000', alphaValue); // Use the hex color
-        });
-    </script>
-
+    </div>
 </body>
 </html>

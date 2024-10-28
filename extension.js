@@ -1394,6 +1394,8 @@ DisplayPalatte(currentPalatte);
 
   function appendMenuAfterSelectandClick() {
 
+
+    
     // Create the main menu container
     const SelectedMenu = document.createElement('div');
     SelectedMenu.id = 'SelectedMenu';
@@ -1413,16 +1415,73 @@ DisplayPalatte(currentPalatte);
     Xcross.style.cursor = 'pointer';
     Xcross.style.backgroundColor = '#313030';
     Xcross.style.marginBottom = '40px'
-
-    SelectedMenu.appendChild(Xcross);
+    header.innerHTML = ''
+    header.appendChild(Xcross);
 
    if(selectedElement.tagName !== 'IMG'){
+    
     const backgroundColorBOx = document.createElement('div');
     const backgroundColorLabel = document.createElement('div');
     backgroundColorLabel.innerText = 'Background'
       backgroundColorBOx.appendChild(backgroundColorLabel)
+     
+      const lockEle = document.createElement('button');
+      lockEle.innerText = 'Lock';
+      lockEle.addEventListener('click',()=>{
+        if(selectedElement.classList.contains('not-editable')){
+          selectedElement.classList.remove('not-editable')
+          lockEle.innerText = 'IT Is Unlock now'
+
+        }else{
+
+          selectedElement.classList.add('not-editable')
+          lockEle.innerText = 'IT Is locked now'
+
+        }
 
 
+      })
+     
+      SelectedMenu.appendChild(lockEle)
+      function createDynamicDivs() {
+        const container = document.createElement('div');
+        container.style.fontFamily = "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        container.style.gap = '20px';
+    
+        const items = [
+            { label: 'Background', color: 'aqua' },
+            { label: 'Text', color: 'rgb(13, 14, 14)' },
+            { label: 'Border', color: 'rgb(13, 14, 14)' },
+            { label: 'Box Shadow', color: 'rgb(13, 14, 14)' }
+        ];
+    
+        items.forEach(item => {
+            const div = document.createElement('div');
+            div.style.display = 'flex';
+            div.style.justifyContent = 'space-between';
+    
+            const label = document.createElement('div');
+            label.style.fontSize = '13px';
+            label.textContent = `${item.label} :`;
+    
+            const colorBox = document.createElement('div');
+            colorBox.style.backgroundColor = item.color;
+            colorBox.style.height = '20px';
+            colorBox.style.width = '20px';
+            colorBox.style.borderRadius = '5px';
+            colorBox.style.cursor = 'pointer';
+            colorBox.style.outline = item.label === 'Text' || item.label === 'Border' || item.label === 'Box Shadow' ? '1px solid white' : 'none';
+    
+            div.appendChild(label);
+            div.appendChild(colorBox);
+            container.appendChild(div);
+        });
+    
+       SelectedMenu.appendChild(container);
+    }
+    createDynamicDivs()
       // Create color input fields
       const colorInput1 = document.createElement('input');
       colorInput1.type = 'color';
@@ -1521,31 +1580,30 @@ selectedElement.style.webkitTextFillColor = 'transparent';
     extractDistinctColors(selectedElement)
 
     // ------------------------------------------------------Extract Img Color ----------------------------------------------------------
-    function extractDistinctColors(img) {
+    function extractDistinctColors(img, pixelationFactor = 10) {
       const canvas = document.createElement('canvas');
-  
       const ctx = canvas.getContext('2d');
-
-      // Set canvas size to image size
-      canvas.width = img.width;
-      canvas.height = img.height;
-
-      
-
-      // Draw the image on canvas
-      ctx.drawImage(img, 0, 0);
-
-      // Get pixel data
+  
+      // Set canvas size to a reduced size based on the pixelation factor
+      const scaledWidth = Math.floor(img.width / pixelationFactor);
+      const scaledHeight = Math.floor(img.height / pixelationFactor);
+      canvas.width = scaledWidth;
+      canvas.height = scaledHeight;
+  
+      // Draw the image on the scaled canvas
+      ctx.drawImage(img, 0, 0, scaledWidth, scaledHeight);
+  
+      // Get pixel data from the scaled-down canvas
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
       const colorMap = {};
-
+  
       // Loop through pixel data
       for (let i = 0; i < data.length; i += 4) {
           const r = data[i];     // Red
           const g = data[i + 1]; // Green
           const b = data[i + 2]; // Blue
-
+  
           // Create a color key
           const colorKey = `${r},${g},${b}`;
           
@@ -1558,19 +1616,21 @@ selectedElement.style.webkitTextFillColor = 'transparent';
                   break;
               }
           }
-
+  
           if (!found) {
               colorMap[colorKey] = 1; // Add new color
           }
       }
-
+  
       // Sort colors by frequency and get the top 5 distinct colors
       const sortedColors = Object.entries(colorMap)
           .sort((a, b) => b[1] - a[1])
           .slice(0, 5);
-
+  
       displayColors(sortedColors);
   }
+  
+  
 
     function isSimilar(color1, color2) {
       const [r1, g1, b1] = color1.split(',').map(Number);
@@ -1626,9 +1686,12 @@ selectedElement.style.webkitTextFillColor = 'transparent';
 
     // For debugging, add mousedown event
     Xcross.addEventListener('mousedown', function(e) {
-        console.log("Mouse down on Xcross");
+     
         SelectedMenu.remove()
         window.toggleEditMode();
+            header.innerHTML = ''
+            header.innerText = '#ReDesign'
+ 
         e.stopPropagation();
     });
 
@@ -2112,3 +2175,13 @@ let selectedFont = fonts[index];
 
 
 
+
+
+
+
+  function customColorPickerToPick(){
+
+
+
+
+  }
