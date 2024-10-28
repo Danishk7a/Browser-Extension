@@ -3,63 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Text Masking</title>
+    <title>Scrolling Stars</title>
     <style>
         body {
+            height: 200vh; /* Make the page tall for scrolling */
             margin: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000; /* Background color for contrast */
-            overflow: hidden;
+            overflow: hidden; /* Hide overflow to only show canvas */
+            background: black; /* Background for contrast */
         }
-
-        .container {
-            position: relative;
-           width: 100%;
-           height: 100vh;
-        }
-
-        .container video{
-            width: 100%;
-            height: 100vh;
-            
-        }
-        
-        .textbox{
-            position: absolute;
-            background-color: #000;
-            height: 100%;
-            width: 100%;
-            color: azure;
+        canvas {
+            position: fixed; /* Fixed position for the canvas */
             top: 0;
             left: 0;
-            display: flex;
-            color: #FFFFFF;
-	/* display: inline; */
-	font-family: MR-Camphor, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-	font-size: 110px;
-	font-weight: 700;
-	letter-spacing: -3.3px;
-	line-height: 110px;
-
-            justify-content: center;
-            align-items: center;
-            mix-blend-mode: multiply;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allow clicks through the canvas */
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        
-        <video class="video" autoplay muted loop>
-            <source src="x.mp4" type="video/mp4">  </video>
+    <canvas id="starfield"></canvas>
 
-            <div class="textbox">
-                <h1>ReThink</h1>
-            </div>
+    <div style="height: 2000vh;"></div>
+    
+    <script>
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        const stars = [];
+        const numStars = 100;
 
-    </div>
+        // Resize canvas
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Create stars
+        for (let i = 0; i < numStars; i++) {
+            stars.push({
+                x: Math.random() * canvas.width,
+                y: Math.random() * canvas.height,
+                size: Math.random() * 2 + 1, // Star size between 1 and 3
+                speed: Math.random() * 0.5 + 0.5 // Speed between 0.5 and 1
+            });
+        }
+
+        // Draw stars
+        function drawStars(scrollOffset) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+            stars.forEach(star => {
+                ctx.fillStyle = 'white';
+                ctx.beginPath();
+                ctx.arc(star.x, star.y + (scrollOffset * star.speed), star.size, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        }
+
+        // Update on scroll
+        window.addEventListener('scroll', () => {
+            const scrollOffset = window.scrollY; // Get scroll position
+            drawStars(scrollOffset); // Draw stars based on scroll
+        });
+
+        // Initial draw
+        drawStars(0);
+    </script>
 </body>
 </html>
